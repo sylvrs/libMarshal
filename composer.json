@@ -1,9 +1,9 @@
 {
   "name": "sylvrs/libmarshal",
   "description": "A library used for marshalling/unmarshalling data into objects",
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "license": "proprietary",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "authors": [
     {
       "name": "Matthew Jordan",
