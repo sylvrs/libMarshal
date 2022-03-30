@@ -5,6 +5,9 @@ namespace libMarshal;
 
 
 use libMarshal\attributes\Field;
+use libMarshal\exception\GeneralMarshalException;
+use libMarshal\exception\UnmarshalException;
+use libMarshal\exception\MarshalException;
 use ReflectionClass;
 use ReflectionProperty;
 use RuntimeException;
@@ -38,31 +41,42 @@ trait MarshalTrait {
 				continue;
 			}
 			$value = $this->{$property->getName()};
+			// If the value is an object and has the trait, we override
 			if(is_object($value) && self::hasTrait(new ReflectionClass($value), MarshalTrait::class)) {
 				$value = $value->marshal();
 			}
-
 			$name = strlen($field->name) > 0 ? $field->name : $property->getName();
 			$data[$name] = $value;
 		}
 		return $data;
 	}
 
+	/**
+	 * @param array $data - The data to unmarshal with
+	 * @param bool $strict - Whether to throw an exception if a field is missing
+	 * @return MarshalTrait
+	 * @throws GeneralMarshalException
+	 * @throws UnmarshalException
+	 */
 	public static function unmarshal(array $data, bool $strict = true): static {
 		$reflected = new ReflectionClass(static::class);
 		/** @var static $instance */
 		$instance = $reflected->newInstanceWithoutConstructor();
 		foreach($reflected->getProperties() as $property) {
 			$field = self::getField($property);
+			// Property doesn't have the Field attribute, so we skip it
 			if($field === null) {
 				continue;
 			}
 			$name = strlen($field->name) > 0 ? $field->name : $property->getName();
 			$value = $data[$name] ?? null;
 			if($value === null && $strict) {
-				throw new RuntimeException("Missing field '$name'");
+				throw new UnmarshalException("Missing field '$name'");
 			}
-			// Check if the value is an array or an stdClass
+			// Ensure that the value is of the correct type
+			self::checkType($property, $value);
+
+			// If the value is an array or an stdClass, we can check if it has the MarshalTrait and if so, we can unmarshal it
 			if(is_array($value) || $value instanceof \stdClass) {
 				// Get class type associated with the property
 				$type = $property->getType();
@@ -80,6 +94,9 @@ trait MarshalTrait {
 		return $instance;
 	}
 
+	/**
+	 * @throws GeneralMarshalException
+	 */
 	private static function getField(ReflectionProperty $property): ?Field {
 		$attribute = $property->getAttributes(Field::class)[0] ?? null;
 		if($attribute === null) {
@@ -87,7 +104,7 @@ trait MarshalTrait {
 		}
 		$field = $attribute->newInstance();
 		if(!($field instanceof Field)) {
-			throw new RuntimeException("Field attribute must be an instance of Field");
+			throw new GeneralMarshalException("Field attribute must be an instance of Field");
 		}
 		return $field;
 	}
@@ -103,12 +120,22 @@ trait MarshalTrait {
 		return count(array_filter($class->getTraits(), fn(ReflectionClass $trait) => $trait->getName() === $traitClass)) === 1;
 	}
 
+	/**
+	 * @throws GeneralMarshalException
+	 */
 	private static function checkType(ReflectionProperty $property, mixed $value): void {
 		$type = $property->getType();
 		if($type === null) {
 			return;
 		}
-
+		$valueTypeName = get_debug_type($value);
+		$typeName = $type->getName();
+		if($type instanceof \ReflectionNamedType && $valueTypeName !== $typeName) {
+			throw new GeneralMarshalException("Field '{$property->getName()}' must be of type '$typeName', got '$valueTypeName'");
+		} else if($type instanceof \ReflectionUnionType && !in_array($valueTypeName, $type->getTypes(), true)) {
+			throw new GeneralMarshalException("Field '{$property->getName()}' must be of type '$typeName', got '$valueTypeName'");
+		}
+		// TODO: 8.1 now supports ReflectionIntersectionType, so when that is more widely used, we can add support for it here
 	}
 
 }
