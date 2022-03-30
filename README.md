@@ -30,23 +30,23 @@ The only prerequisite behind marshalling/unmarshalling an embedded object is to 
 ```php
 
 class Range {
-    use MarshalTrait;
+	use MarshalTrait;
     
+	#[Field]
+	public int $min = 0;
+	#[Field]
+	public int $max = 10;
     #[Field]
-    public int $min = 0;
-    #[Field]
-    public int $max = 10;
-    #[Field]
-    public int $default = 0;
+	public int $default = 0;
 }
 
 class Options {
-    use MarshalTrait;
+	use MarshalTrait;
     
-    #[Field]
-    public string $username = "TestUserName";
-    #[Field]
-    public Range $range;
+	#[Field]
+	public string $username = "TestUserName";
+	#[Field]
+	public Range $range;
 }
 ```
 
@@ -56,14 +56,14 @@ Here is a full example:
 class User {
     use MarshalTrait;
     
-    #[Field(name: "first-name")]
-		public string $firstName;
-		#[Field(name: "last-name")]
-		public string $lastName;
-		#[Field]
-		public int $age;
-		#[Field]
-		public string $email;
+	#[Field(name: "first-name")]
+	public string $firstName;
+	#[Field(name: "last-name")]
+	public string $lastName;
+	#[Field]
+	public int $age;
+	#[Field]
+	public string $email;
 }
 ```
 From here, you can create and marshal the object easily through `User->marshal()`. This will return an array of results.
