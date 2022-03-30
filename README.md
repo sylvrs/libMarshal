@@ -65,10 +65,17 @@ class User {
 	#[Field]
 	public string $email;
 }
-```
-From here, you can create and marshal the object easily through `User->marshal()`. This will return an array of results.
-To return the data back into an object, all you have to do is `User::unmarshal($data)`
 
+// Marshalling
+$user = new User(firstName: "John", lastName: "Doe", age: 30, email: "johndoe@gmail.com");
+$data = $user->marshal(); // ["first-name" => "John", "last-name" => "Doe", "age" => 30, "email" => "johndoe@gmail.com"]
+
+$data["first-name"] = "Jane"; // Changing the first name
+$data["email"] = "janedoe@gmail.com"; // Changing the email
+
+// Unmarshalling
+$user = User::unmarshal($data); // User(firstName: "Jane", lastName: "Doe", age: 30, email: "janedoe@gmail.com")
+```
 
 ### Limitations
 As the library stands, the constructor is never called when creating an object. This is intentional as argument ordering may have unintended side effects.
