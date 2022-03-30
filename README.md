@@ -31,18 +31,18 @@ The only prerequisite behind marshalling/unmarshalling an embedded object is to 
 
 class Range {
 	use MarshalTrait;
-    
+	
 	#[Field]
 	public int $min = 0;
 	#[Field]
 	public int $max = 10;
-    #[Field]
+	#[Field]
 	public int $default = 0;
 }
 
 class Options {
 	use MarshalTrait;
-    
+	
 	#[Field]
 	public string $username = "TestUserName";
 	#[Field]
@@ -54,8 +54,8 @@ class Options {
 Here is a full example:
 ```php
 class User {
-    use MarshalTrait;
-    
+	use MarshalTrait;
+	
 	#[Field(name: "first-name")]
 	public string $firstName;
 	#[Field(name: "last-name")]
