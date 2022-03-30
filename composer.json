@@ -3,6 +3,7 @@
   "description": "A library used for marshalling/unmarshalling data into objects",
   "minimum-stability": "dev",
   "license": "proprietary",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "Matthew Jordan",
