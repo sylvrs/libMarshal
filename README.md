@@ -66,6 +66,9 @@ class User {
 	public string $email;
 }
 
+// NOTE: This uses promoted properties to make it easier to construct.
+// You can learn more about this below.
+
 // Marshalling
 $user = new User(firstName: "John", lastName: "Doe", age: 30, email: "johndoe@gmail.com");
 $data = $user->marshal(); // ["first-name" => "John", "last-name" => "Doe", "age" => 30, "email" => "johndoe@gmail.com"]
