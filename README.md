@@ -14,7 +14,7 @@ Furthermore, this trait gives you access to two methods:
 This attribute is one of the largest parts of the library as it is what determines what `MarshalTrait` marshals/unmarshals.
 If a property is not annotated with this attribute, it will not be handled.
 
-The Field attribute accepts one argument: `name`. If no name is specified, `MarshalTrait` will use the property name as the name to encode with.
+The Field attribute accepts one argument: `name`. If no name is specified, `MarshalTrait` will use the property name as the name to marshal/unmarshal with.
 
 As examples:
 ```php
