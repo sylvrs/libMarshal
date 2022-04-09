@@ -15,7 +15,6 @@ use RuntimeException;
 /**
  * This is the main trait used for marshaling/demarshaling data.
  *
- * At the moment, it can only be used for marshaling/demarshaling scalar types.
  *
  * A good use case for this would be with data classes. For example:
  *
