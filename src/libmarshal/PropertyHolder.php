@@ -37,7 +37,7 @@ class PropertyHolder {
 	 * This method is a lazy-loaded getter to get all
 	 * reflection classes associated with the property's type
 	 *
-	 * @return array<ReflectionClass<object>>
+	 * @return array<ReflectionClass>
 	 * @throws ReflectionException
 	 */
 	public function getTypeClasses(): array {
