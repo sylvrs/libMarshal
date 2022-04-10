@@ -10,10 +10,8 @@ final class MarshalTest extends TestCase {
 
 	public function testMarshalOptions(): void {
 		$options = new Options(
-			name: "Test",
-			type: "Options",
-			testField: 123,
-			unmarshaledField: true
+			name: "Test", type: "Options",
+			testField: 123, unmarshaledField: true
 		);
 		$this->assertEquals([
 			"name" => "Test",
@@ -45,6 +43,14 @@ final class MarshalTest extends TestCase {
 			"age" => 42,
 			"email" => ""
 		]);
+
+		$this->assertEquals(
+			expected: new User(
+				firstName: "John", lastName: "Doe",
+				age: 42, email: ""
+			),
+			actual: $user
+		);
 	}
 
 	public function testMarshalEmbeddedUser(): void {
