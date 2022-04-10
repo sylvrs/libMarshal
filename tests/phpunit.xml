@@ -1,0 +1,5 @@
+<testsuites>
+    <testsuite name="Tests">
+        <directory>libmarshal</directory>
+    </testsuite>
+</testsuites>
