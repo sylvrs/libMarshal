@@ -13,4 +13,9 @@ final class UnmarshalTest extends TestCase {
 		$this->assertEquals(User::unmarshal($user->marshal(), false), $user);
 	}
 
+	public function testUnmarshalEmbeddedUserWithNullOptions(): void {
+		$user = new EmbeddedUser(firstName: "John", lastName: "Doe", age: 42, email: "johndoe@gmail.com");
+		$this->assertEquals(User::unmarshal($user->marshal(), false), $user);
+	}
+
 }
