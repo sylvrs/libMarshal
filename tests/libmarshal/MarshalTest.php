@@ -41,13 +41,13 @@ final class MarshalTest extends TestCase {
 			"first-name" => "John",
 			"last-name" => "Doe",
 			"age" => 42,
-			"email" => ""
 		]);
 
 		$this->assertEquals(
 			expected: new User(
-				firstName: "John", lastName: "Doe",
-				age: 42, email: ""
+				firstName: "John",
+				lastName: "Doe",
+				age: 42
 			),
 			actual: $user
 		);
@@ -69,4 +69,22 @@ final class MarshalTest extends TestCase {
 		);
 	}
 
+	public function testMarshalEmbeddedUserWithNullOptions(): void {
+		$user = new EmbeddedUser(firstName: "John", lastName: "Doe", age: 42, email: "johndoe@gmail.com");
+		$this->assertEquals(
+			[
+				"first-name" => "John",
+				"last-name" => "Doe",
+				"age" => 42,
+				"email" => "johndoe@gmail.com",
+				"embedded-options" => null
+			],
+			$user->marshal()
+		);
+	}
+
+	public function testUnmarshalEmbeddedUserWithNullOptions(): void {
+		$user = new EmbeddedUser(firstName: "John", lastName: "Doe", age: 42, email: "johndoe@gmail.com");
+		$this->assertEquals(EmbeddedUser::unmarshal($user->marshal(), false), $user);
+	}
 }
