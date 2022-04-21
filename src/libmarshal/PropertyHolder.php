@@ -53,7 +53,7 @@ class PropertyHolder {
 	private function createTypeClasses(): array {
 		$typeClasses = self::resolveClassesFromType($this->property->getType());
 		foreach($typeClasses as $typeClass) {
-			if(!MarshalTrait::hasTrait($typeClass, MarshalTrait::class)) {
+			if(!self::hasTrait($typeClass, MarshalTrait::class)) {
 				throw new RuntimeException("The type '{$typeClass->getName()}' is not a marshal type");
 			}
 		}
@@ -95,6 +95,17 @@ class PropertyHolder {
 			),
 			default => []
 		};
+	}
+
+	/**
+	 * Returns true if a given class has a trait on it
+	 *
+	 * @param ReflectionClass $class
+	 * @param class-string $traitClass
+	 * @return bool
+	 */
+	private static function hasTrait(ReflectionClass $class, string $traitClass): bool {
+		return count(array_filter($class->getTraits(), fn(ReflectionClass $trait) => $trait->getName() === $traitClass)) === 1;
 	}
 
 }
