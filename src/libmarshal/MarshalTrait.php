@@ -156,17 +156,6 @@ trait MarshalTrait {
 	}
 
 	/**
-	 * Returns true if a given class has a trait on it
-	 *
-	 * @param ReflectionClass $class
-	 * @param class-string $traitClass
-	 * @return bool
-	 */
-	public static function hasTrait(ReflectionClass $class, string $traitClass): bool {
-		return count(array_filter($class->getTraits(), fn(ReflectionClass $trait) => $trait->getName() === $traitClass)) === 1;
-	}
-
-	/**
 	 * @throws GeneralMarshalException
 	 */
 	private static function checkType(ReflectionProperty $property, mixed $value): void {
