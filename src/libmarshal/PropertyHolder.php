@@ -100,8 +100,8 @@ class PropertyHolder {
 	/**
 	 * Returns true if a given class has a trait on it
 	 *
-	 * @param ReflectionClass $class
-	 * @param class-string $traitClass
+	 * @param ReflectionClass<object> $class
+	 * @param class-string<object> $traitClass
 	 * @return bool
 	 */
 	private static function hasTrait(ReflectionClass $class, string $traitClass): bool {
