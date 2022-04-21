@@ -175,11 +175,17 @@ trait MarshalTrait {
 			return;
 		}
 		$valueTypeName = get_debug_type($value);
-		$typeName = $type->getName();
-		if($type instanceof ReflectionNamedType && $valueTypeName !== $typeName) {
-			throw new GeneralMarshalException("Field '{$property->getName()}' must be of type '$typeName', got '$valueTypeName'");
+		if($type instanceof ReflectionNamedType && $valueTypeName !== $type->getName()) {
+			throw new GeneralMarshalException("Field '{$property->getName()}' must be of type '{$type->getName()}', got '$valueTypeName'");
 		} else if($type instanceof ReflectionUnionType && !in_array($valueTypeName, $type->getTypes(), true)) {
-			throw new GeneralMarshalException("Field '{$property->getName()}' must be of type '$typeName', got '$valueTypeName'");
+			$types = implode(
+				separator: ",",
+				array: array_map(
+					callback: fn(ReflectionNamedType $type) => $type->getName(),
+					array: $type->getTypes()
+				)
+			);
+			throw new GeneralMarshalException("Field '{$property->getName()}' must be one of the types ($types), got '$valueTypeName'");
 		}
 		// TODO: 8.1 now supports ReflectionIntersectionType, so when that is more widely used, we can add support for it here
 	}
