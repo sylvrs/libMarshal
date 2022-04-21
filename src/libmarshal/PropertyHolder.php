@@ -61,6 +61,16 @@ class PropertyHolder {
 	}
 
 	/**
+	 * This method is used to determine whether
+	 * a property's type(s) allow for a null value
+	 *
+	 * @return bool
+	 */
+	public function allowsNull(): bool {
+		return $this->property->getType()?->allowsNull() ?? false;
+	}
+
+	/**
 	 * Returns an array of properties that is intended to be destructured.
 	 *
 	 * @return array<int, mixed>
