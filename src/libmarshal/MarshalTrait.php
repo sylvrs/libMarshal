@@ -89,7 +89,7 @@ trait MarshalTrait {
 				// Fetch the value
 				$value = $data[$name] ?? null;
 				// If the value is null & strict is true, throw an exception
-				if($value === null && $strict) {
+				if($value === null && !$holder->allowsNull() && $strict) {
 					throw new UnmarshalException("Missing field '$name'");
 				}
 				// If the value is an array, we can check if it has the MarshalTrait and if so, we can unmarshal it
