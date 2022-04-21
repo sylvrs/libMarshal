@@ -17,7 +17,7 @@ class User {
 		#[Field]
 		public int $age,
 		#[Field]
-		public string $email
+		public ?string $email = null
 	)
 	{
 	}
