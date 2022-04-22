@@ -2,24 +2,25 @@
 
 declare(strict_types=1);
 
-namespace libMarshal;
+namespace libMarshal\parser;
 
 /**
  * @template T of mixed
+ * @template U of mixed
  */
 interface Parseable {
 
 	/**
 	 * Given an array of data, this will return a value
 	 *
-	 * @param mixed $data
-	 * @return T
+	 * @param T $data
+	 * @return U
 	 */
 	public function parse(mixed $data): mixed;
 
 	/**
-	 * @param T $data
-	 * @return mixed
+	 * @param U $data
+	 * @return T
 	 */
 	public function serialize(mixed $data): mixed;
 
