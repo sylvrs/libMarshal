@@ -56,12 +56,10 @@ trait MarshalTrait {
 				// Get the current value of the property
 				$value = $this->{$property->getName()};
 				// If the value is an object and has any type classes with the trait, we override
-				if(is_object($value)) {
-					if(($parser = $holder->getParser()) instanceof Parseable) {
-						$value = $parser->serialize($value);
-					} else if(count($holder->getTypeClasses()) > 0) {
-						$value = $value->marshal();
-					}
+				if(($parser = $holder->getParser()) instanceof Parseable) {
+					$value = $parser->serialize($value);
+				} else if(is_object($value) && count($holder->getTypeClasses()) > 0) {
+					$value = $value->marshal();
 				}
 				// Update the array with the value
 				$name = $field->name !== "" ? $field->name : $property->getName();
@@ -98,19 +96,17 @@ trait MarshalTrait {
 					throw new UnmarshalException("Missing field '$name'");
 				}
 				// If the value is an array, we can check if it has the MarshalTrait and if so, we can unmarshal it
-				if(is_array($value)) {
-					if(($parser = $holder->getParser()) instanceof Parseable) {
-						$value = $parser->parse($value);
-					} else if(count($holder->getTypeClasses()) > 0) {
-						foreach($holder->getTypeClasses() as $type) {
-							try {
-								$method = $type->getMethod(__FUNCTION__);
-								$value = $method->invoke($instance, $value, $strict);
-								break;
-							}
-							catch(ReflectionException|UnmarshalException $_) {
-								// We don't care about this exception, we just want to try the next type
-							}
+				if(($parser = $holder->getParser()) instanceof Parseable) {
+					$value = $parser->parse($value);
+				} else if(is_array($value) && count($holder->getTypeClasses()) > 0) {
+					foreach($holder->getTypeClasses() as $type) {
+						try {
+							$method = $type->getMethod(__FUNCTION__);
+							$value = $method->invoke($instance, $value, $strict);
+							break;
+						}
+						catch(ReflectionException|UnmarshalException $_) {
+							// We don't care about this exception, we just want to try the next type
 						}
 					}
 				} else {
