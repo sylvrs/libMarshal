@@ -12,12 +12,12 @@
   ],
   "autoload": {
     "psr-4": {
-      "libMarshal\\": "src/libmarshal"
+      "libMarshal\\": "src/libMarshal"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "libMarshal\\": "tests/libmarshal"
+      "libMarshal\\": "tests/libMarshal"
     }
   },
   "require": {
