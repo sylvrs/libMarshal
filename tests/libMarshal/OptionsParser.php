@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace libMarshal;
 
-/** @implements Parseable<Options> */
+use libMarshal\parser\Parseable;
+
+/** @implements Parseable<array, Options> */
 class OptionsParser implements Parseable {
 
+	/**
+	 * @param array $data
+	 * @return Options
+	 */
 	public function parse(mixed $data): Options {
-		assert(is_array($data), "Expected array, got " . gettype($data));
 		return new Options(
 			name: $data["name"],
 			type: $data["type"],
@@ -17,11 +22,10 @@ class OptionsParser implements Parseable {
 	}
 
 	/**
-	 * @param mixed $data
+	 * @param Options $data
 	 * @return array
 	 */
-	public function serialize(mixed $data): mixed {
-		assert($data instanceof Options, "Expected Options, got " . get_class($data));
+	public function serialize(mixed $data): array {
 		return [
 			"name" => $data->name,
 			"type" => $data->type,

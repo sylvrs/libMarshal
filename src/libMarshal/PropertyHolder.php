@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace libMarshal;
 
 use libMarshal\attributes\Field;
+use libMarshal\parser\Parseable;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
@@ -37,7 +38,7 @@ class PropertyHolder {
 	 * This method is a getter for the field's parser and is
 	 * primarily used as a way to reduce excessive chaining of methods
 	 *
-	 * @return Parseable<mixed>|null
+	 * @return Parseable<mixed, mixed>|null
 	 */
 	public function getParser(): ?Parseable
 	{
