@@ -109,6 +109,7 @@ class PropertyHolder {
 	 * @throws ReflectionException
 	 */
 	private static function resolveNamedTypeToClass(ReflectionNamedType $type): ?ReflectionClass {
+		/** @phpstan-ignore-next-line - PHPStan can't infer that `getName()` returns a class-string */
 		return !$type->isBuiltin() ? new ReflectionClass($type->getName()) : null;
 	}
 
