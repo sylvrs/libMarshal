@@ -7,6 +7,7 @@ namespace libMarshal;
 use libMarshal\attributes\Field;
 use libMarshal\exception\GeneralMarshalException;
 use libMarshal\exception\UnmarshalException;
+use libMarshal\parser\Parseable;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
