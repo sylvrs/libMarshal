@@ -9,15 +9,24 @@ use libMarshal\attributes\Field;
 class EmbeddedUser extends User {
 	use MarshalTrait;
 
+	/**
+	 * @param string $firstName
+	 * @param string $lastName
+	 * @param int $age
+	 * @param string[] $contacts
+	 * @param string $email
+	 * @param Options|null $options
+	 */
 	public function __construct(
 		string $firstName,
 		string $lastName,
 		int $age,
+		array $contacts,
 		string $email,
 		#[Field(name: "embedded-options")]
 		public ?Options $options = null
 	)
 	{
-		parent::__construct($firstName, $lastName, $age, $email);
+		parent::__construct($firstName, $lastName, $age, $contacts, $email);
 	}
 }
