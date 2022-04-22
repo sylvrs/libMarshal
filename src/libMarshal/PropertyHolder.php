@@ -67,7 +67,7 @@ class PropertyHolder {
 	 * @return bool
 	 */
 	public function allowsNull(): bool {
-		return $this->property->getType()?->allowsNull() ?? false;
+		return $this->property->getType()?->allowsNull() ?? true;
 	}
 
 	/**
