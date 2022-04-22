@@ -87,14 +87,19 @@ class PropertyHolder {
 	 * @throws ReflectionException
 	 */
 	private static function resolveClassesFromType(?ReflectionType $type): array {
-		return match(true) {
-			$type instanceof ReflectionNamedType => [new ReflectionClass($type->getName())],
-			$type instanceof ReflectionUnionType => array_map(
-				callback: static fn (ReflectionNamedType $type) => new ReflectionClass($type->getName()),
-				array: $type->getTypes()
-			),
-			default => []
-		};
+		// Don't attempt to resolve built in types to a reflection class
+		$resolver = static fn(ReflectionNamedType $namedType): ?ReflectionClass => !$namedType->isBuiltin() ? new ReflectionClass($namedType->getName()) : null;
+
+		return array_filter(
+			array: match(true) {
+				$type instanceof ReflectionNamedType => [$resolver($type)],
+				$type instanceof ReflectionUnionType => array_map(
+					callback: static fn (ReflectionNamedType $type) => $resolver($type),
+					array: $type->getTypes()
+				),
+				default => []
+			}
+		);
 	}
 
 	/**
