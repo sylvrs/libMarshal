@@ -23,7 +23,7 @@ class EmbeddedUser extends User {
 		int $age,
 		array $contacts,
 		string $email,
-		#[Field(name: "embedded-options")]
+		#[Field(name: "embedded-options", parser: OptionsParser::class)]
 		public ?Options $options = null
 	)
 	{
