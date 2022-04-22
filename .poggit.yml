@@ -1,6 +1,0 @@
---- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/sylvrs/libMarshal
-build-by-default: true
-branches:
-- feature/virion
-projects: []
-...
