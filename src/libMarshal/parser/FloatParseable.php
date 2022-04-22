@@ -11,14 +11,14 @@ namespace libMarshal\parser;
 interface FloatParseable extends Parseable {
 
 	/**
-	 * @param float $data
+	 * @param float $value
 	 * @return U
 	 */
-	public function parse(mixed $data): mixed;
+	public function parse(mixed $value): mixed;
 
 	/**
 	 * @param U $data
 	 * @return float
 	 */
-	public function serialize(mixed $data): float;
+	public function serialize(mixed $value): float;
 }

@@ -15,14 +15,14 @@ namespace libMarshal\parser;
 interface ArrayParseable extends Parseable {
 
 	/**
-	 * @param array<K,V> $data
+	 * @param array<K, V> $value
 	 * @return U
 	 */
-	public function parse(mixed $data): mixed;
+	public function parse(mixed $value): mixed;
 
 	/**
-	 * @param U $data
+	 * @param U $value
 	 * @return array<K,V>
 	 */
-	public function serialize(mixed $data): array;
+	public function serialize(mixed $value): array;
 }

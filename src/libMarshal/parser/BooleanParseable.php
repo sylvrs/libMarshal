@@ -11,14 +11,14 @@ namespace libMarshal\parser;
 interface BooleanParseable extends Parseable {
 
 	/**
-	 * @param bool $data
+	 * @param bool $value
 	 * @return U
 	 */
-	public function parse(mixed $data): mixed;
+	public function parse(mixed $value): mixed;
 
 	/**
-	 * @param U $data
+	 * @param U $value
 	 * @return bool
 	 */
-	public function serialize(mixed $data): bool;
+	public function serialize(mixed $value): bool;
 }

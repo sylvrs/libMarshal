@@ -11,14 +11,14 @@ namespace libMarshal\parser;
 interface ObjectParseable extends Parseable {
 
 	/**
-	 * @param object $data
+	 * @param object $value
 	 * @return U
 	 */
-	public function parse(mixed $data): mixed;
+	public function parse(mixed $value): mixed;
 
 	/**
-	 * @param U $data
+	 * @param U $value
 	 * @return object
 	 */
-	public function serialize(mixed $data): object;
+	public function serialize(mixed $value): object;
 }
