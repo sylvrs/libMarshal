@@ -121,6 +121,96 @@ trait MarshalTrait {
 		}
 	}
 
+	/**
+	 * This method is used to marshal the object and save it into a YAML file
+	 *
+	 * @param string $fileName
+	 * @param int $encoding
+	 * @param int $linebreak
+	 * @param array $callbacks
+	 * @return bool
+	 * @throws GeneralMarshalException
+	 */
+	public function saveToYaml(string $fileName, int $encoding = YAML_ANY_ENCODING, int $linebreak = YAML_ANY_BREAK, array $callbacks = []): bool {
+		return yaml_emit_file(
+			filename: $fileName,
+			data: $this->marshal(),
+			encoding: $encoding,
+			linebreak: $linebreak,
+			callbacks: $callbacks
+		);
+	}
+
+	/**
+	 * This method is used to load YAML data from a file and unmarshal it into an instance of the trait user
+	 *
+	 * @param string $fileName
+	 * @param bool $strict
+	 * @param int $pos
+	 * @param int|null $ndocs
+	 * @param array $callbacks
+	 * @return static
+	 * @throws GeneralMarshalException
+	 * @throws UnmarshalException
+	 */
+	public static function loadFromYaml(string $fileName, bool $strict = true, int $pos = 0, ?int &$ndocs = null, array $callbacks = []): static {
+		return self::unmarshal(
+			data: yaml_parse_file(
+				filename: $fileName,
+				pos: $pos,
+				ndocs: $ndocs,
+				callbacks: $callbacks
+			),
+			strict: $strict
+		);
+	}
+
+	/**
+	 * This method is used to marshal the object and save it into a JSON file
+	 *
+	 * @param string $fileName
+	 * @param int $flags
+	 * @param int $depth
+	 * @return int|false
+	 * @throws GeneralMarshalException
+	 */
+	public function saveToJson(string $fileName, int $flags = 0, int $depth = 512): int|false {
+		return file_put_contents(
+			filename: $fileName,
+			data: json_encode(
+				value: $this->marshal(),
+				flags: $flags,
+				depth: $depth
+			)
+		);
+	}
+
+	/**
+	 * This method is used to load JSON data from a file and unmarshal it into an instance of the trait user
+	 *
+	 * @param string $fileName
+	 * @param bool $strict
+	 * @param int $depth
+	 * @param int $flags
+	 * @return static
+	 * @throws GeneralMarshalException
+	 * @throws UnmarshalException
+	 */
+	public static function loadFromJson(string $fileName, bool $strict = true, int $depth = 512, int $flags = 0): static {
+		return self::unmarshal(
+			data: json_decode(
+				json: file_get_contents(
+					filename: $fileName
+				),
+				associative: true,
+				depth: $depth,
+				flags: $flags
+			),
+			strict: $strict
+		);
+	}
+
+
 	private static function getReflectedInstance(): ReflectionClass {
 		return self::$reflectedInstance ??= new ReflectionClass(static::class);
 	}
