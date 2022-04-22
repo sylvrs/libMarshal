@@ -96,7 +96,7 @@ trait MarshalTrait {
 				if(is_array($value) && count($holder->getTypeClasses()) > 0) {
 					foreach($holder->getTypeClasses() as $type) {
 						try {
-							$method = $type->getMethod("unmarshal");
+							$method = $type->getMethod(__FUNCTION__);
 							$value = $method->invoke($instance, $value, $strict);
 							break;
 						}
