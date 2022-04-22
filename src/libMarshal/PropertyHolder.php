@@ -87,19 +87,29 @@ class PropertyHolder {
 	 * @throws ReflectionException
 	 */
 	private static function resolveClassesFromType(?ReflectionType $type): array {
-		// Don't attempt to resolve built in types to a reflection class
-		$resolver = static fn(ReflectionNamedType $namedType): ?ReflectionClass => !$namedType->isBuiltin() ? new ReflectionClass($namedType->getName()) : null;
-
 		return array_filter(
 			array: match(true) {
-				$type instanceof ReflectionNamedType => [$resolver($type)],
+				$type instanceof ReflectionNamedType => [self::resolveNamedTypeToClass($type)],
 				$type instanceof ReflectionUnionType => array_map(
-					callback: static fn (ReflectionNamedType $type) => $resolver($type),
+					callback: static fn (ReflectionNamedType $type) => self::resolveNamedTypeToClass($type),
 					array: $type->getTypes()
 				),
 				default => []
 			}
 		);
+	}
+
+	/**
+	 * A static method used to resolve a specific type into one of two things:
+	 * 1. `ReflectionClass` - An instance if it is a class
+	 * 2. `null` - Null if it is a primitive type
+	 *
+	 * @param ReflectionNamedType $type
+	 * @return ReflectionClass<object>|null
+	 * @throws ReflectionException
+	 */
+	private static function resolveNamedTypeToClass(ReflectionNamedType $type): ?ReflectionClass {
+		return !$type->isBuiltin() ? new ReflectionClass($type->getName()) : null;
 	}
 
 	/**
