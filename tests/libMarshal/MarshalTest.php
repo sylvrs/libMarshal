@@ -8,18 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 final class MarshalTest extends TestCase {
 
-	public function testMarshalOptions(): void {
-		$options = new Options(
-			name: "Test", type: "Options",
-			testField: 123, unmarshaledField: true
-		);
-		$this->assertEquals([
-			"name" => "Test",
-			"type" => "Options",
-			"testField" => 123
-		], $options->marshal());
-	}
-
 	public function testMarshalUser(): void {
 		$user = new User(
 			firstName: "John",
@@ -38,7 +26,7 @@ final class MarshalTest extends TestCase {
 	}
 
 	public function testMarshalEmbeddedUser(): void {
-		$options = new Options(name: "Test", type: "Embedded Options", testField: 456, unmarshaledField: false);
+		$options = new Options(name: "Test", type: "Embedded Options", testField: 456);
 		$user = new EmbeddedUser(firstName: "John", lastName: "Doe", age: 42, contacts: [], email: "johndoe@gmail.com", options: $options);
 
 		$this->assertEquals(

@@ -34,6 +34,18 @@ class PropertyHolder {
 	}
 
 	/**
+	 * This method is a getter for the field's parser and is
+	 * primarily used as a way to reduce excessive chaining of methods
+	 *
+	 * @return Parseable<mixed>|null
+	 */
+	public function getParser(): ?Parseable
+	{
+		return $this->field->getParser();
+	}
+
+
+	/**
 	 * This method is a lazy-loaded getter to get all
 	 * reflection classes associated with the property's type
 	 *
@@ -52,9 +64,11 @@ class PropertyHolder {
 	 */
 	private function createTypeClasses(): array {
 		$typeClasses = self::resolveClassesFromType($this->property->getType());
-		foreach($typeClasses as $typeClass) {
-			if(!self::hasTrait($typeClass, MarshalTrait::class)) {
-				throw new RuntimeException("The type '{$typeClass->getName()}' is not a marshal type");
+		if($this->field->getParser() === null) {
+			foreach($typeClasses as $typeClass) {
+				if(!self::hasTrait($typeClass, MarshalTrait::class)) {
+					throw new RuntimeException("The type '{$typeClass->getName()}' is not a marshal type");
+				}
 			}
 		}
 		return $typeClasses;
