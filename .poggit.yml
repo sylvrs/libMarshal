@@ -1,6 +1,0 @@
---- # Poggit-CI Manifest.
-build-by-default: true
-branches:
-- master
-projects: []
-...
