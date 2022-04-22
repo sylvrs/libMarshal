@@ -26,9 +26,11 @@ public string $hiddenName; // This field will not be included in either marshall
 ```
 
 ### Using Objects in properties
-The only prerequisite behind marshalling/unmarshalling an embedded object is to have the class set up with the `MarshalTrait` and `Field`s. Here is an example on how you would use that:
-```php
+There are two main ways that you can use objects in properties.
 
+The first (and easiest) is to use the `MarshalTrait` trait on the object's class. Like explained above, both `MarshalTrait` trait and the `Field` attribute on the properties are required.
+Here is an example on how you would use that:
+```php
 class Range {
 	use MarshalTrait;
 	
@@ -49,6 +51,42 @@ class Options {
 	public Range $range;
 }
 ```
+The second way can be found below in the `Parser` section.
+
+### Parser
+In this library, parsing is done by using the `Parseable` interface. This interface is simple and only consists of two methods:
+- `parse(mixed $data)` - This takes in the raw data and returns it as a parsed form (whatever that may be).
+- `serialize(mixed $data)` - This takes in the parsed data and returns it back into a raw form.
+
+By default, the `Parseable` interface accepts the `mixed` type (though it allows for using PHPStan templates to specify the type). This can be restricted further by using any of the sub-interfaces of `Parseable`.
+These sub-interfaces are all primitives and each modify the parameters through annotation while also changing the return type where applicable.
+The full list of parseable types are:
+- `ArrayParseable` - This is a parseable type that accepts an array.
+- `BooleanParseable` - This is a parseable type that accepts a boolean.
+- `FloatParseable` - This is a parseable type that accepts a float.
+- `IntParseable` - This is a parseable type that accepts an integer.
+- `ObjectParseable` - This is a parseable type that accepts an object.
+- `StringParseable` - This is a parseable type that accepts a string.
+
+After selecting the proper interface that fits your use case, you can implement the interface and use your own logic to parse/serialize the data. An example of this is shown below:
+```php
+class MyParser implements Parseable {
+    public function parse(mixed $data) : mixed {
+        return $data;
+    }
+    
+    public function serialize(mixed $data) : mixed {
+        return $data;
+    }
+}
+```
+
+From there, all you need to do is pass the class string to the `Field` attribute like so:
+```php
+#[Field(parser: MyParser::class)]
+public string $name;
+```
+If used correctly, the parser is a very powerful tool that allows for a lot of flexibility in how you can use the library.
 
 ### Example
 Here is a full example:
