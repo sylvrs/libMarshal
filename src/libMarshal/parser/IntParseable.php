@@ -11,14 +11,14 @@ namespace libMarshal\parser;
 interface IntParseable extends Parseable {
 
 	/**
-	 * @param int $data
+	 * @param int $value
 	 * @return U
 	 */
-	public function parse(mixed $data): mixed;
+	public function parse(mixed $value): mixed;
 
 	/**
-	 * @param U $data
+	 * @param U $value
 	 * @return int
 	 */
-	public function serialize(mixed $data): int;
+	public function serialize(mixed $value): int;
 }
