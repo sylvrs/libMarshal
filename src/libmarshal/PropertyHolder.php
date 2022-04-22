@@ -80,7 +80,7 @@ class PropertyHolder {
 	}
 
 	/**
-	 * A static method used to resolved a type to an array of ReflectionClass instances
+	 * A static method used to resolve a type to an array of ReflectionClass instances
 	 *
 	 * @param ReflectionType|null $type
 	 * @return array<ReflectionClass<object>>
