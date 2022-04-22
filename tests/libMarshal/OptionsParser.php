@@ -6,30 +6,30 @@ namespace libMarshal;
 
 use libMarshal\parser\Parseable;
 
-/** @implements Parseable<array, Options> */
+/** @implements Parseable<array, Options|null> */
 class OptionsParser implements Parseable {
 
 	/**
-	 * @param array $data
-	 * @return Options
+	 * @param array|null $data
+	 * @return Options|null
 	 */
-	public function parse(mixed $data): Options {
-		return new Options(
+	public function parse(mixed $data): ?Options {
+		return is_array($data) ? new Options(
 			name: $data["name"],
 			type: $data["type"],
 			testField: $data["testField"]
-		);
+		) : null;
 	}
 
 	/**
-	 * @param Options $data
-	 * @return array
+	 * @param Options|null $data
+	 * @return array|null
 	 */
-	public function serialize(mixed $data): array {
-		return [
+	public function serialize(mixed $data): ?array {
+		return $data instanceof Options ? [
 			"name" => $data->name,
 			"type" => $data->type,
 			"testField" => $data->testField
-		];
+		] : null;
 	}
 }

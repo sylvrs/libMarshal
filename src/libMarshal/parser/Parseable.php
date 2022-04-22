@@ -13,23 +13,21 @@ namespace libMarshal\parser;
  * #[Field(name: "Test", parser: TestParser::class)]
  * protected TestClass $test;
  *
- * @template T of mixed
- * @template U of mixed
+ * @template T of mixed - The type to parse from.
+ * @template U of mixed - The type to parse to.
  */
 interface Parseable {
 
 	/**
-	 * Given an array of data, this will return a value
-	 *
-	 * @param T $data
+	 * @param T $value - The data to parse
 	 * @return U
 	 */
-	public function parse(mixed $data): mixed;
+	public function parse(mixed $value): mixed;
 
 	/**
-	 * @param U $data
+	 * @param U $value
 	 * @return T
 	 */
-	public function serialize(mixed $data): mixed;
+	public function serialize(mixed $value): mixed;
 
 }
