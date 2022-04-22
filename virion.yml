@@ -2,7 +2,7 @@ name: libMarshal
 description: A library for transforming data to/from objects.
 authors:
   - sylvrs
-version: 1.2.0
+version: 1.2.1
 php:
   - 8.0
 antigen: libMarshal
