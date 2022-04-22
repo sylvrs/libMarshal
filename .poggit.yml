@@ -1,4 +1,4 @@
---- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/sylvrs/libMarshal
+--- # Poggit-CI Manifest.
 build-by-default: true
 branches:
 - master
