@@ -9,13 +9,11 @@ jobs:
           - "8.0"
           - "8.1"
     steps:
-      # Dependencies
+      - uses: actions/checkout@v2
       - uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php }}"
           extensions: yaml
-      - name: Check Find
-        run: find ~
       - name: Install Composer dependencies
         run: composer install --no-dev --prefer-dist --no-interaction
       # PHPStan
