@@ -18,7 +18,7 @@ jobs:
         run: composer install --no-dev --prefer-dist --no-interaction
       # PHPStan
       - name: Run PHPStan
-        run: ./vendor/bin/phpstan analyze
+        run: /vendor/bin/phpstan analyze
       # PHPUnit
       - name: Run PHPUnit
         run: /vendor/bin/phpunit --bootstrap vendor/autoload.php --configuration tests/phpunit.xml
