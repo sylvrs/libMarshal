@@ -290,8 +290,8 @@ trait MarshalTrait {
 		$types = array_map(
 			callback: fn(ReflectionNamedType $type) => $type->getName(),
 			array: match(true) {
-				$type instanceof ReflectionUnionType => $type->getTypes(),
 				$type instanceof ReflectionNamedType => [$type],
+				$type instanceof ReflectionUnionType => $type->getTypes(),
 				default => []
 			}
 		);
