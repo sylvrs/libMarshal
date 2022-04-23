@@ -19,6 +19,7 @@ jobs:
           extensions: yaml
       - uses: "ramsey/composer-install@v2"
         with:
+          working-directory: "./"
           dependency-versions: "${{ matrix.dependencies }}"
       # PHPStan
       - name: Run PHPStan
