@@ -7,7 +7,7 @@ namespace libMarshal\parser;
 /**
  * @template U of mixed
  *
- * @template K of mixed
+ * @template K of array-key
  * @template V of mixed
  *
  * @extends Parseable<array, U>
