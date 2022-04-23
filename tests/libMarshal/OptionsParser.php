@@ -10,26 +10,26 @@ use libMarshal\parser\Parseable;
 class OptionsParser implements Parseable {
 
 	/**
-	 * @param array|null $data
+	 * @param array|null $value
 	 * @return Options|null
 	 */
-	public function parse(mixed $data): ?Options {
-		return is_array($data) ? new Options(
-			name: $data["name"],
-			type: $data["type"],
-			testField: $data["testField"]
+	public function parse(mixed $value): ?Options {
+		return is_array($value) ? new Options(
+			name: $value["name"],
+			type: $value["type"],
+			testField: $value["testField"]
 		) : null;
 	}
 
 	/**
-	 * @param Options|null $data
+	 * @param Options|null $value
 	 * @return array|null
 	 */
-	public function serialize(mixed $data): ?array {
-		return $data instanceof Options ? [
-			"name" => $data->name,
-			"type" => $data->type,
-			"testField" => $data->testField
+	public function serialize(mixed $value): ?array {
+		return $value instanceof Options ? [
+			"name" => $value->name,
+			"type" => $value->type,
+			"testField" => $value->testField
 		] : null;
 	}
 }
