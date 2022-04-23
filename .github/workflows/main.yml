@@ -14,10 +14,8 @@ jobs:
         with:
           php-version: "${{ matrix.php }}"
           extensions: yaml
-      - name: Check parent directory
-        run: ls ../
-      - name: Check current directory
-        run: ls ./
+      - name: Check Find
+        run: find ~
       - name: Install Composer dependencies
         run: composer install --no-dev --prefer-dist --no-interaction
       # PHPStan
