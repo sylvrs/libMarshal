@@ -14,6 +14,7 @@ final class MarshalTest extends TestCase {
 			lastName: "Doe",
 			age: 42,
 			height: 1.78,
+			contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"],
 			email: "johndoe@gmail.com"
 		);
 
@@ -22,14 +23,14 @@ final class MarshalTest extends TestCase {
 			"last-name" => "Doe",
 			"age" => 42,
 			"height" => 1.78,
-			"contacts" => [],
+			"contacts" => ["janedoe@gmail.com", "jimdoe@gmail.com"],
 			"email" => "johndoe@gmail.com"
 		], $user->marshal());
 	}
 
 	public function testMarshalEmbeddedUser(): void {
 		$options = new Options(name: "Test", type: "Embedded Options", testField: 456);
-		$user = new EmbeddedUser(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: [], email: "johndoe@gmail.com", options: $options);
+		$user = new EmbeddedUser(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"], email: "johndoe@gmail.com", options: $options);
 
 		$this->assertEquals(
 			[
@@ -37,7 +38,7 @@ final class MarshalTest extends TestCase {
 				"last-name" => "Doe",
 				"age" => 42,
 				"height" => 1.78,
-				"contacts" => [],
+				"contacts" => ["janedoe@gmail.com", "jimdoe@gmail.com"],
 				"email" => "johndoe@gmail.com",
 				"embedded-options" => ["name" => "Test", "type" => "Embedded Options", "testField" => 456]
 			],
@@ -46,14 +47,14 @@ final class MarshalTest extends TestCase {
 	}
 
 	public function testMarshalEmbeddedUserWithNullOptions(): void {
-		$user = new EmbeddedUser(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: [], email: "johndoe@gmail.com");
+		$user = new EmbeddedUser(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"], email: "johndoe@gmail.com");
 		$this->assertEquals(
 			[
 				"first-name" => "John",
 				"last-name" => "Doe",
 				"age" => 42,
 				"height" => 1.78,
-				"contacts" => [],
+				"contacts" => ["janedoe@gmail.com", "jimdoe@gmail.com"],
 				"email" => "johndoe@gmail.com",
 				"embedded-options" => null
 			],
