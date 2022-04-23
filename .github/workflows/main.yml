@@ -1,18 +1,18 @@
+name: Continuous Integration
+
 on: [push]
 jobs:
-  phpstan:
+  ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: php-actions/composer@v5
-      # Run PHPStan
+      # Dependencies
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "latest"
+      - uses: "ramsey/composer-install@v2"
+      # PHPStan
       - name: Run PHPStan
-        uses: php-actions/phpstan@v3.0.0
-        with:
-          path: src/
-      # Run PHPUnit
+        run: ./vendor/bin/phpstan analyze
+      # PHPUnit
       - name: Run PHPUnit
-        uses: php-actions/phpunit@v3
-        with:
-          bootstrap: vendor/autoload.php
-          configuration: tests/phpunit.xml
+        run: /vendor/bin/phpunit --bootstrap vendor/autoload.php --configuration tests/phpunit.xml
