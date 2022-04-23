@@ -19,6 +19,8 @@ jobs:
           extensions: yaml
       - name: Install Composer
         run: curl -sS https://getcomposer.org/installer | php
+      - name: Check directory
+        run: ls ./
       - name: Install Composer dependencies
         run: php composer.phar install --no-dev --prefer-dist --no-interaction
       # PHPStan
