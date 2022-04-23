@@ -1,5 +1,5 @@
 # libMarshal
-A small marshalling library used to encode/decode data from classes
+A small marshalling library used to encode/decode data from classes.
 
 ## Installation
 ### Composer
@@ -9,6 +9,38 @@ composer require sylvrs/libmarshal
 ```
 ### Virion
 The virion for this library can be accessed [here](https://poggit.pmmp.io/ci/sylvrs/libMarshal/libMarshal).
+
+## Basic Example
+Here is a basic example on how this library is used:
+```php
+class User {
+	use MarshalTrait;
+	
+	public function __construct(
+        #[Field(name: "first-name")]
+        public string $firstName,
+        #[Field(name: "last-name")]
+        public string $lastName,
+        #[Field]
+        public int $age,
+        #[Field]
+        public string $email
+	) {}
+}
+
+// NOTE: This uses promoted properties to make it easier to construct.
+// You can learn more about this below.
+
+// Marshalling
+$user = new User(firstName: "John", lastName: "Doe", age: 30, email: "johndoe@gmail.com");
+$data = $user->marshal(); // ["first-name" => "John", "last-name" => "Doe", "age" => 30, "email" => "johndoe@gmail.com"]
+
+$data["first-name"] = "Jane"; // Changing the first name
+$data["email"] = "janedoe@gmail.com"; // Changing the email
+
+// Unmarshalling
+$user = User::unmarshal($data); // User(firstName: "Jane", lastName: "Doe", age: 30, email: "janedoe@gmail.com")
+```
 
 ## Wiki
 To learn about how to use the library, please consult the wiki [here](https://github.com/sylvrs/libMarshal/wiki).
