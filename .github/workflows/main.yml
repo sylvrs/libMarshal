@@ -8,21 +8,18 @@ jobs:
         php:
           - "8.0"
           - "8.1"
-        dependencies:
-          - "lowest"
-          - "highest"
     steps:
       # Dependencies
       - uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php }}"
           extensions: yaml
-      - name: Install Composer
-        run: curl -sS https://getcomposer.org/installer | php
-      - name: Check directory
+      - name: Check parent directory
+        run: ls ../
+      - name: Check current directory
         run: ls ./
       - name: Install Composer dependencies
-        run: php composer.phar install --no-dev --prefer-dist --no-interaction
+        run: composer install --no-dev --prefer-dist --no-interaction
       # PHPStan
       - name: Run PHPStan
         run: ./vendor/bin/phpstan analyze
