@@ -1,15 +1,25 @@
 name: Continuous Integration
-
 on: [push]
 jobs:
   ci:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php:
+          - "8.0"
+          - "8.1"
+        dependencies:
+          - "lowest"
+          - "highest"
     steps:
       # Dependencies
       - uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "latest"
+          php-version: "${{ matrix.php }}"
+          extensions: yaml
       - uses: "ramsey/composer-install@v2"
+        with:
+          dependency-versions: "${{ matrix.dependencies }}"
       # PHPStan
       - name: Run PHPStan
         run: ./vendor/bin/phpstan analyze
