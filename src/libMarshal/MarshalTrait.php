@@ -12,6 +12,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
 use ReflectionProperty;
+use ReflectionType;
 use ReflectionUnionType;
 
 /**
@@ -251,6 +252,8 @@ trait MarshalTrait {
 	}
 
 	/**
+	 * This method is used as a way to check if a property's types are compatible with the value being set
+	 *
 	 * @throws GeneralMarshalException
 	 */
 	private static function checkType(ReflectionProperty $property, mixed $value): void {
@@ -258,10 +261,11 @@ trait MarshalTrait {
 		if($type === null || ($value === null && $type->allowsNull())) {
 			return;
 		}
+
 		$valueTypeName = get_debug_type($value);
-		if($type instanceof ReflectionNamedType && $valueTypeName !== $type->getName()) {
+		if($type instanceof ReflectionNamedType && $valueTypeName !== $type->getName() && !self::hasEdgeCase($type, $value)) {
 			throw new GeneralMarshalException("Field '{$property->getName()}' must be of type '{$type->getName()}', got '$valueTypeName'");
-		} else if($type instanceof ReflectionUnionType && !in_array($valueTypeName, $type->getTypes(), true)) {
+		} else if($type instanceof ReflectionUnionType && !in_array($valueTypeName, $type->getTypes(), true) && !self::hasEdgeCase($type, $value)) {
 			$types = implode(
 				separator: ",",
 				array: array_map(
@@ -272,6 +276,31 @@ trait MarshalTrait {
 			throw new GeneralMarshalException("Field '{$property->getName()}' must be one of the types ($types), got '$valueTypeName'");
 		}
 		// TODO: 8.1 now supports ReflectionIntersectionType, so when that is more widely used, we can add support for it here
+	}
+
+	/**
+	 * This method is used as a way to check for weird edge cases that can occur between types.
+	 *
+	 * @param ReflectionType $type
+	 * @param mixed $value
+	 * @return bool
+	 */
+	private static function hasEdgeCase(ReflectionType $type, mixed $value): bool {
+		// Map the types to a list of their names
+		$types = array_map(
+			callback: fn(ReflectionNamedType $type) => $type->getName(),
+			array: match(true) {
+				$type instanceof ReflectionUnionType => $type->getTypes(),
+				$type instanceof ReflectionNamedType => [$type],
+				default => []
+			}
+		);
+
+		return match(true) {
+			// If the value is an int, it can be implicitly cast to a float
+			get_debug_type($value) === "int" && in_array(needle: "float", haystack: $types, strict: true) => true,
+			default => false
+		};
 	}
 
 }
