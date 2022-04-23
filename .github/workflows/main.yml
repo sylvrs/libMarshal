@@ -17,10 +17,10 @@ jobs:
         with:
           php-version: "${{ matrix.php }}"
           extensions: yaml
-      - uses: "ramsey/composer-install@v2"
-        with:
-          working-directory: "./"
-          dependency-versions: "${{ matrix.dependencies }}"
+      - name: Install Composer
+        run: curl -sS https://getcomposer.org/installer | php
+      - name: Install Composer dependencies
+        run: php composer.phar install --no-dev --prefer-dist --no-interaction
       # PHPStan
       - name: Run PHPStan
         run: ./vendor/bin/phpstan analyze
