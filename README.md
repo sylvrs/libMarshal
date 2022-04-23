@@ -102,14 +102,16 @@ Here is a full example:
 class User {
 	use MarshalTrait;
 	
-	#[Field(name: "first-name")]
-	public string $firstName;
-	#[Field(name: "last-name")]
-	public string $lastName;
-	#[Field]
-	public int $age;
-	#[Field]
-	public string $email;
+	public function __construct(
+        #[Field(name: "first-name")]
+        public string $firstName,
+        #[Field(name: "last-name")]
+        public string $lastName,
+        #[Field]
+        public int $age,
+        #[Field]
+        public string $email
+	) {}
 }
 
 // NOTE: This uses promoted properties to make it easier to construct.
