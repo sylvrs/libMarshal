@@ -16,8 +16,6 @@ jobs:
           extensions: yaml
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction
-      - name: Run Find
-        run: find .
       # PHPStan
       - name: Run PHPStan
         run: ./vendor/bin/phpstan analyze
