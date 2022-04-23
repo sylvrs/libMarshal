@@ -21,7 +21,7 @@ class FileTest extends TestCase {
 
 
 	public function testSaveUserToJson(): void {
-		$user = new User(firstName: "John", lastName: "Doe", age: 42, contacts: [], email: "johndoe@gmail.com");
+		$user = new User(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: [], email: "johndoe@gmail.com");
 		$user->saveToJson(self::JSON_PATH);
 		$this->expectNotToPerformAssertions();
 	}
@@ -34,12 +34,13 @@ class FileTest extends TestCase {
 		$this->assertEquals("John", $user->firstName);
 		$this->assertEquals("Doe", $user->lastName);
 		$this->assertEquals(42, $user->age);
+		$this->assertEquals(1.78, $user->height);
 		$this->assertEquals([], $user->contacts);
 		$this->assertEquals("johndoe@gmail.com", $user->email);
 	}
 
 	public function testSaveUserToYaml(): void {
-		$user = new User(firstName: "John", lastName: "Doe", age: 42, contacts: [], email: "johndoe@gmail.com");
+		$user = new User(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: [], email: "johndoe@gmail.com");
 		$user->saveToYaml(self::YAML_PATH);
 		$this->expectNotToPerformAssertions();
 	}
@@ -52,8 +53,16 @@ class FileTest extends TestCase {
 		$this->assertEquals("John", $user->firstName);
 		$this->assertEquals("Doe", $user->lastName);
 		$this->assertEquals(42, $user->age);
+		$this->assertEquals(1.78, $user->height);
 		$this->assertEquals([], $user->contacts);
 		$this->assertEquals("johndoe@gmail.com", $user->email);
+	}
+
+	public function testIntEdgeCase(): void {
+		$user = new User(firstName: "John", lastName: "Doe", age: 42, height: 2, contacts: [], email: "johndoe@gmail.com");
+		$user->saveToJson(self::JSON_PATH);
+		$user = User::loadFromJson(self::JSON_PATH);
+		$this->assertEquals(2, $user->height);
 	}
 
 }

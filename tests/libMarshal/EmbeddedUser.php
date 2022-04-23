@@ -13,6 +13,7 @@ class EmbeddedUser extends User {
 	 * @param string $firstName
 	 * @param string $lastName
 	 * @param int $age
+	 * @param float $height
 	 * @param string[] $contacts
 	 * @param string $email
 	 * @param Options|null $options
@@ -21,12 +22,13 @@ class EmbeddedUser extends User {
 		string $firstName,
 		string $lastName,
 		int $age,
+		float $height,
 		array $contacts,
 		string $email,
 		#[Field(name: "embedded-options", parser: OptionsParser::class)]
 		public ?Options $options = null
 	)
 	{
-		parent::__construct($firstName, $lastName, $age, $contacts, $email);
+		parent::__construct($firstName, $lastName, $age, $height, $contacts, $email);
 	}
 }
