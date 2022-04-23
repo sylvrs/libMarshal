@@ -88,6 +88,14 @@ public string $name;
 ```
 If used correctly, the parser is a very powerful tool that allows for a lot of flexibility in how you can use the library.
 
+
+### Saving / Loading
+By default, the `MarshalTrait` trait comes with support for two file formats:
+- `json` - This comes with the static method `loadFromJson(string $fileName)` and the class method `saveToJson(string $fileName)`.
+- `yaml` - This comes with the static method `loadFromYaml(string $fileName)` and the class method `saveToYaml(string $fileName)`.
+
+Each contain arguments that wrap their respective encoding and decoding methods.
+
 ### Example
 Here is a full example:
 ```php
