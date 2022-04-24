@@ -88,7 +88,7 @@ class PropertyHolder {
 	/**
 	 * Returns an array of properties that is intended to be destructured.
 	 *
-	 * @return array<int, mixed>
+	 * @return array{0: ReflectionProperty, 1: Field}
 	 */
 	public function asArray(): array {
 		return [$this->property, $this->field];
