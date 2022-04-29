@@ -272,20 +272,30 @@ trait MarshalTrait {
 		if($type === null || ($value === null && $type->allowsNull())) {
 			return;
 		}
-
 		$valueTypeName = get_debug_type($value);
 		if($type instanceof ReflectionNamedType && $valueTypeName !== $type->getName() && !self::hasEdgeCase($type, $value)) {
 			throw new GeneralMarshalException("Field '{$property->getName()}' must be of type '{$type->getName()}', got '$valueTypeName'");
-		} else if($type instanceof ReflectionUnionType && !in_array($valueTypeName, $type->getTypes(), true) && !self::hasEdgeCase($type, $value)) {
-			$types = implode(
-				separator: ",",
-				array: array_map(
-					callback: fn(ReflectionNamedType $type) => $type->getName(),
-					array: $type->getTypes()
-				)
-			);
-			throw new GeneralMarshalException("Field '{$property->getName()}' must be one of the types ($types), got '$valueTypeName'");
+		} else if($type instanceof ReflectionUnionType && !in_array($valueTypeName, ($types = self::getTypeNames($type)), true) && !self::hasEdgeCase($type, $value)) {
+			$imploded = implode(separator: ", ", array: $types);
+			throw new GeneralMarshalException("Field '{$property->getName()}' must be one of the types ($imploded), got '$valueTypeName'");
 		}
+	}
+
+	/**
+	 * This method is used to compile a list of names associated with a given type
+	 *
+	 * @param ReflectionType $type
+	 * @return array
+	 */
+	private static function getTypeNames(ReflectionType $type): array {
+		return array_map(
+			callback: fn(ReflectionNamedType $type) => $type->getName(),
+			array: match(true) {
+				$type instanceof ReflectionNamedType => [$type],
+				$type instanceof ReflectionUnionType => $type->getTypes(),
+				default => []
+			}
+		);
 	}
 
 	/**
@@ -296,16 +306,7 @@ trait MarshalTrait {
 	 * @return bool
 	 */
 	private static function hasEdgeCase(ReflectionType $type, mixed $value): bool {
-		// Map the types to a list of their names
-		$types = array_map(
-			callback: fn(ReflectionNamedType $type) => $type->getName(),
-			array: match(true) {
-				$type instanceof ReflectionNamedType => [$type],
-				$type instanceof ReflectionUnionType => $type->getTypes(),
-				default => []
-			}
-		);
-
+		$types = self::getTypeNames($type);
 		return match(true) {
 			// If the value is an int, it can be implicitly cast to a float
 			get_debug_type($value) === "int" && in_array(needle: "float", haystack: $types, strict: true) => true,
