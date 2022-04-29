@@ -146,8 +146,7 @@ class PropertyHolder {
 	 * @param int $maxIterations - The maximum number of inheritance levels to check (e.g., child -> parent -> grandparent, etc.)
 	 * @return bool - Returns true if the class or any of its parents has the trait
 	 */
-	private static function hasTraitRecursive(ReflectionClass $class, string $traitClass, int $maxIterations = 10): bool
-	{
+	private static function hasTraitRecursive(ReflectionClass $class, string $traitClass, int $maxIterations = 10): bool {
 		if($maxIterations <= 0) {
 			throw new RuntimeException("Maximum number of iterations exceeded");
 		}
