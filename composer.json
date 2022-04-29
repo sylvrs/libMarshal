@@ -3,7 +3,7 @@
   "description": "A library used for marshalling/unmarshalling data into objects",
   "minimum-stability": "stable",
   "license": "gpl-3.0",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "authors": [
     {
       "name": "Matthew Jordan",
