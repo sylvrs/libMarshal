@@ -109,8 +109,7 @@ trait MarshalTrait {
 							$method = $type->getMethod(__FUNCTION__);
 							$value = $method->invoke($instance, $value, $strict);
 							break;
-						}
-						catch(ReflectionException|UnmarshalException) {
+						} catch(ReflectionException|GeneralMarshalException) {
 							// We don't care about this exception, we just want to try the next type
 						}
 					}
