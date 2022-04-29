@@ -5,6 +5,7 @@ namespace libMarshal;
 
 
 use libMarshal\attributes\Field;
+use libMarshal\exception\FileNotFoundException;
 use libMarshal\exception\GeneralMarshalException;
 use libMarshal\exception\UnmarshalException;
 use libMarshal\parser\Parseable;
@@ -56,10 +57,11 @@ trait MarshalTrait {
 
 				// Get the current value of the property
 				$value = $this->{$property->getName()};
-				// If the value is an object and has any type classes with the trait, we override
 				if(($parser = $holder->getParser()) instanceof Parseable) {
+					// If the holder has an associated parser, use that for marshaling
 					$value = $parser->serialize($value);
 				} else if(is_object($value) && count($holder->getTypeClasses()) > 0) {
+					// If the value is an object and has any type classes with the trait, we override
 					$value = $value->marshal();
 				}
 				// Update the array with the value
@@ -82,6 +84,7 @@ trait MarshalTrait {
 	 */
 	public static function unmarshal(array $data, bool $strict = true): static {
 		try {
+			// Create a new instance of the class
 			/** @var static $instance */
 			$instance = self::getReflectedInstance()->newInstanceWithoutConstructor();
 			foreach(self::getHolders() as $holder) {
@@ -92,21 +95,22 @@ trait MarshalTrait {
 				$name = $field->name !== "" ? $field->name : $property->getName();
 				// Fetch the value
 				$value = $data[$name] ?? null;
-				// If the value is null & strict is true, throw an exception
+				// If the value is null, doesn't allow null, & strict is true, throw an exception
 				if($value === null && !$holder->allowsNull() && $strict) {
 					throw new UnmarshalException("Missing field '$name'");
 				}
-				// If the value is an array, we can check if it has the MarshalTrait and if so, we can unmarshal it
 				if(($parser = $holder->getParser()) instanceof Parseable) {
+					// If the holder has an associated parser, use that for unmarshaling
 					$value = $parser->parse($value);
 				} else if(is_array($value) && count($holder->getTypeClasses()) > 0) {
+					// If the value is an array, we can check if it has the MarshalTrait and if so, we can unmarshal it
 					foreach($holder->getTypeClasses() as $type) {
 						try {
 							$method = $type->getMethod(__FUNCTION__);
 							$value = $method->invoke($instance, $value, $strict);
 							break;
 						}
-						catch(ReflectionException|UnmarshalException $_) {
+						catch(ReflectionException|UnmarshalException) {
 							// We don't care about this exception, we just want to try the next type
 						}
 					}
@@ -114,6 +118,7 @@ trait MarshalTrait {
 					// Ensure that the value is of the correct type
 					self::checkType($property, $value);
 				}
+				// Set the value on the instance
 				$instance->{$property->getName()} = $value;
 			}
 			return $instance;
@@ -155,6 +160,9 @@ trait MarshalTrait {
 	 * @throws UnmarshalException
 	 */
 	public static function loadFromYaml(string $fileName, bool $strict = true, int $pos = 0, ?int &$ndocs = null, array $callbacks = []): static {
+		if(!file_exists($fileName)) {
+			throw new FileNotFoundException("The file '$fileName' does not exist");
+		}
 		return self::unmarshal(
 			data: yaml_parse_file(
 				filename: $fileName,
@@ -198,6 +206,9 @@ trait MarshalTrait {
 	 * @throws UnmarshalException
 	 */
 	public static function loadFromJson(string $fileName, bool $strict = true, int $depth = 512, int $flags = 0): static {
+		if(!file_exists($fileName)) {
+			throw new FileNotFoundException("The file '$fileName' does not exist");
+		}
 		return self::unmarshal(
 			data: json_decode(
 				json: file_get_contents(
@@ -261,21 +272,30 @@ trait MarshalTrait {
 		if($type === null || ($value === null && $type->allowsNull())) {
 			return;
 		}
-
 		$valueTypeName = get_debug_type($value);
 		if($type instanceof ReflectionNamedType && $valueTypeName !== $type->getName() && !self::hasEdgeCase($type, $value)) {
 			throw new GeneralMarshalException("Field '{$property->getName()}' must be of type '{$type->getName()}', got '$valueTypeName'");
-		} else if($type instanceof ReflectionUnionType && !in_array($valueTypeName, $type->getTypes(), true) && !self::hasEdgeCase($type, $value)) {
-			$types = implode(
-				separator: ",",
-				array: array_map(
-					callback: fn(ReflectionNamedType $type) => $type->getName(),
-					array: $type->getTypes()
-				)
-			);
-			throw new GeneralMarshalException("Field '{$property->getName()}' must be one of the types ($types), got '$valueTypeName'");
+		} else if($type instanceof ReflectionUnionType && !in_array($valueTypeName, ($types = self::getTypeNames($type)), true) && !self::hasEdgeCase($type, $value)) {
+			$imploded = implode(separator: ", ", array: $types);
+			throw new GeneralMarshalException("Field '{$property->getName()}' must be one of the types ($imploded), got '$valueTypeName'");
 		}
-		// TODO: 8.1 now supports ReflectionIntersectionType, so when that is more widely used, we can add support for it here
+	}
+
+	/**
+	 * This method is used to compile a list of names associated with a given type
+	 *
+	 * @param ReflectionType $type
+	 * @return array
+	 */
+	private static function getTypeNames(ReflectionType $type): array {
+		return array_map(
+			callback: fn(ReflectionNamedType $type) => $type->getName(),
+			array: match(true) {
+				$type instanceof ReflectionNamedType => [$type],
+				$type instanceof ReflectionUnionType => $type->getTypes(),
+				default => []
+			}
+		);
 	}
 
 	/**
@@ -286,16 +306,7 @@ trait MarshalTrait {
 	 * @return bool
 	 */
 	private static function hasEdgeCase(ReflectionType $type, mixed $value): bool {
-		// Map the types to a list of their names
-		$types = array_map(
-			callback: fn(ReflectionNamedType $type) => $type->getName(),
-			array: match(true) {
-				$type instanceof ReflectionUnionType => $type->getTypes(),
-				$type instanceof ReflectionNamedType => [$type],
-				default => []
-			}
-		);
-
+		$types = self::getTypeNames($type);
 		return match(true) {
 			// If the value is an int, it can be implicitly cast to a float
 			get_debug_type($value) === "int" && in_array(needle: "float", haystack: $types, strict: true) => true,

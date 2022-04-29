@@ -24,4 +24,14 @@ final class UnmarshalTest extends TestCase {
 		$this->assertEquals(EmbeddedUser::unmarshal($user->marshal()), $user);
 	}
 
+	public function testUnmarshalUnionUserWithInt(): void {
+		$user = new UnionUser(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"], email: "johndoe@gmail.com", testField: 456);
+		$this->assertEquals(UnionUser::unmarshal($user->marshal()), $user);
+	}
+
+	public function testUnmarshalUnionUserWithString(): void {
+		$user = new UnionUser(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"], email: "johndoe@gmail.com", testField: "test");
+		$this->assertEquals(UnionUser::unmarshal($user->marshal()), $user);
+	}
+
 }
