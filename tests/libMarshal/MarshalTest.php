@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace libMarshal;
 
 use PHPUnit\Framework\TestCase;
+use libMarshal\attributes\Renamer;
 use function ucfirst;
 
 final class MarshalTest extends TestCase {
@@ -37,7 +38,7 @@ final class MarshalTest extends TestCase {
 			height: 1.78,
 			contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"],
 			email: "johndoe@gmail.com"
-		);
+		) {};
 
 		$this->assertEquals([
 			"First-name" => "John",
