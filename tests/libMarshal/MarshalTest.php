@@ -30,7 +30,7 @@ final class MarshalTest extends TestCase {
 		], $user->marshal());
 	}
 
-	public function testMarshalRenamer(): void {
+	public function testMarshalUserRenamer(): void {
 		$user = new #[Renamer("ucfirst")] class extends User(
 			firstName: "John",
 			lastName: "Doe",
