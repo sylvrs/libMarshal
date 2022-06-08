@@ -31,14 +31,14 @@ final class MarshalTest extends TestCase {
 	}
 
 	public function testMarshalUserRenamer(): void {
-		$user = new #[Renamer("ucfirst")] class extends User(
+		$user = new UserRenamer(
 			firstName: "John",
 			lastName: "Doe",
 			age: 42,
 			height: 1.78,
 			contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"],
 			email: "johndoe@gmail.com"
-		) {};
+		);
 
 		$this->assertEquals([
 			"First-name" => "John",

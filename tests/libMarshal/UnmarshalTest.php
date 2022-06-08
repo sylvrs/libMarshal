@@ -16,8 +16,8 @@ final class UnmarshalTest extends TestCase {
 	}
 
 	public function testUnmarshalUserRenamer(): void {
-		$class = new class #[Renamer("ucfirst")](firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"], email: "test@gmail.com") extends User {};
-		$this->assertEquals($class::unmarshal($user->marshal(), false), $user);
+		$user = new UserRenamer(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"], email: "test@gmail.com");
+		$this->assertEquals(UserRenamer::unmarshal($user->marshal(), false), $user);
 	}
 
 	public function testUnmarshalEmbeddedUser(): void {
