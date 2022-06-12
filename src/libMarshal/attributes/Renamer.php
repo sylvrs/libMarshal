@@ -16,15 +16,15 @@ class Renamer {
      */
     protected Closure $renamer;
 
-	/**
-	 * @param callable(string): string Renamer function applies on all fields that have an empty string for the name argument in a class.
-	 */
-	public function __construct(
+    /**
+     * @param callable(string): string Renamer function applies on all fields that have an empty string for the name argument in a class.
+     */
+    public function __construct(
         callable $renamer
-	)
-	{
-		$this->renamer = Closure::fromCallable($renamer);
-	}
+    )
+    {
+        $this->renamer = Closure::fromCallable($renamer);
+    }
 
     /**
      * @return callable(string): string
