@@ -5,6 +5,7 @@ namespace libMarshal;
 
 
 use libMarshal\attributes\Field;
+use libMarshal\attributes\Renamer;
 use libMarshal\exception\FileNotFoundException;
 use libMarshal\exception\GeneralMarshalException;
 use libMarshal\exception\UnmarshalException;
@@ -65,7 +66,7 @@ trait MarshalTrait {
 					$value = $value->marshal();
 				}
 				// Update the array with the value
-				$name = $field->name !== "" ? $field->name : $property->getName();
+				$name = $field->name !== "" ? $field->name : self::renameField($property->getName());
 				$data[$name] = $value;
 			}
 			return $data;
@@ -92,7 +93,7 @@ trait MarshalTrait {
 				[$property, $field] = $holder->asArray();
 
 				// Get the name of the property
-				$name = $field->name !== "" ? $field->name : $property->getName();
+				$name = $field->name !== "" ? $field->name : self::renameField($property->getName());
 				// Fetch the value
 				$value = $data[$name] ?? null;
 				// If the value is null, doesn't allow null, & strict is true, throw an exception
@@ -311,6 +312,16 @@ trait MarshalTrait {
 			get_debug_type($value) === "int" && in_array(needle: "float", haystack: $types, strict: true) => true,
 			default => false
 		};
+	}
+
+	private static function renameField(string $fieldName): string {
+		$attribute = self::getReflectedInstance()->getAttributes(Renamer::class)[0] ?? null;
+		$renamer = $attribute?->newInstance()->getRenamer();
+		if ($renamer !== null) {
+			$fieldName = $renamer($fieldName);
+		}
+
+		return $fieldName;
 	}
 
 }
