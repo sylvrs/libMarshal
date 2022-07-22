@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace libMarshal;
-
 
 use libMarshal\attributes\Field;
 use libMarshal\exception\FileNotFoundException;
@@ -15,10 +15,25 @@ use ReflectionNamedType;
 use ReflectionProperty;
 use ReflectionType;
 use ReflectionUnionType;
+use function array_filter;
+use function array_map;
+use function assert;
+use function count;
+use function file_exists;
+use function file_get_contents;
+use function file_put_contents;
+use function get_debug_type;
+use function implode;
+use function in_array;
+use function is_array;
+use function is_object;
+use function json_decode;
+use function json_encode;
+use function yaml_emit_file;
+use function yaml_parse_file;
 
 /**
  * This is the main trait used for marshaling/demarshaling data.
- *
  *
  * A good use case for this would be with data classes. For example:
  *
@@ -129,11 +144,6 @@ trait MarshalTrait {
 	/**
 	 * This method is used to marshal the object and save it into a YAML file
 	 *
-	 * @param string $fileName
-	 * @param int $encoding
-	 * @param int $linebreak
-	 * @param array $callbacks
-	 * @return bool
 	 * @throws GeneralMarshalException
 	 */
 	public function saveToYaml(string $fileName, int $encoding = YAML_ANY_ENCODING, int $linebreak = YAML_ANY_BREAK, array $callbacks = []): bool {
@@ -149,12 +159,6 @@ trait MarshalTrait {
 	/**
 	 * This method is used to load YAML data from a file and unmarshal it into an instance of the trait user
 	 *
-	 * @param string $fileName
-	 * @param bool $strict
-	 * @param int $pos
-	 * @param int|null $ndocs
-	 * @param array $callbacks
-	 * @return static
 	 * @throws GeneralMarshalException
 	 * @throws UnmarshalException
 	 */
@@ -176,10 +180,6 @@ trait MarshalTrait {
 	/**
 	 * This method is used to marshal the object and save it into a JSON file
 	 *
-	 * @param string $fileName
-	 * @param int $flags
-	 * @param int $depth
-	 * @return int|false
 	 * @throws GeneralMarshalException
 	 */
 	public function saveToJson(string $fileName, int $flags = 0, int $depth = 512): int|false {
@@ -196,11 +196,6 @@ trait MarshalTrait {
 	/**
 	 * This method is used to load JSON data from a file and unmarshal it into an instance of the trait user
 	 *
-	 * @param string $fileName
-	 * @param bool $strict
-	 * @param int $depth
-	 * @param int $flags
-	 * @return static
 	 * @throws GeneralMarshalException
 	 * @throws UnmarshalException
 	 */
@@ -220,7 +215,6 @@ trait MarshalTrait {
 			strict: $strict
 		);
 	}
-
 
 	private static function getReflectedInstance(): ReflectionClass {
 		return self::$reflectedInstance ??= new ReflectionClass(static::class);
@@ -247,9 +241,6 @@ trait MarshalTrait {
 	/**
 	 * Attempts to get the Field attribute from a property
 	 * If the property doesn't have the Field attribute, it will return null
-	 *
-	 * @param ReflectionProperty $property
-	 * @return Field|null
 	 */
 	private static function getField(ReflectionProperty $property): ?Field {
 		$attribute = $property->getAttributes(Field::class)[0] ?? null;
@@ -282,9 +273,6 @@ trait MarshalTrait {
 
 	/**
 	 * This method is used to compile a list of names associated with a given type
-	 *
-	 * @param ReflectionType $type
-	 * @return array
 	 */
 	private static function getTypeNames(ReflectionType $type): array {
 		return array_map(
@@ -299,10 +287,6 @@ trait MarshalTrait {
 
 	/**
 	 * This method is used as a way to check for weird edge cases that can occur between types.
-	 *
-	 * @param ReflectionType $type
-	 * @param mixed $value
-	 * @return bool
 	 */
 	private static function hasEdgeCase(ReflectionType $type, mixed $value): bool {
 		$types = self::getTypeNames($type);

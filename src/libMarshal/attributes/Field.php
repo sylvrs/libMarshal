@@ -14,7 +14,6 @@ class Field {
 	protected ?Parseable $parser = null;
 
 	/**
-	 * @param string $name
 	 * @param class-string<Parseable<mixed, mixed>>|null $parser - This is the class that will be used to parse & serialize the value.
 	 */
 	public function __construct(

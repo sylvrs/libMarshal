@@ -18,7 +18,6 @@ interface ObjectParseable extends Parseable {
 
 	/**
 	 * @param U $value
-	 * @return object
 	 */
 	public function serialize(mixed $value): object;
 }
