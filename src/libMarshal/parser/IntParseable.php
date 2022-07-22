@@ -18,7 +18,6 @@ interface IntParseable extends Parseable {
 
 	/**
 	 * @param U $value
-	 * @return int
 	 */
 	public function serialize(mixed $value): int;
 }
