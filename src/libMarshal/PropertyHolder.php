@@ -13,6 +13,9 @@ use ReflectionProperty;
 use ReflectionType;
 use ReflectionUnionType;
 use RuntimeException;
+use function array_filter;
+use function array_map;
+use function count;
 
 /**
  * The PropertyHolder class is a wrapper class that holds a couple of key pieces of information about a property:
@@ -44,7 +47,6 @@ class PropertyHolder {
 	{
 		return $this->field->getParser();
 	}
-
 
 	/**
 	 * This method is a lazy-loaded getter to get all
@@ -78,11 +80,17 @@ class PropertyHolder {
 	/**
 	 * This method is used to determine whether
 	 * a property's type(s) allow for a null value
-	 *
-	 * @return bool
 	 */
 	public function allowsNull(): bool {
 		return $this->property->getType()?->allowsNull() ?? true;
+	}
+
+	/**
+	 * This method is used to determine whether
+	 * a property has a default value attached to it
+	 */
+	public function hasDefaultValue(): bool {
+		return $this->property->hasDefaultValue();
 	}
 
 	/**
@@ -97,7 +105,6 @@ class PropertyHolder {
 	/**
 	 * A static method used to resolve a type to an array of ReflectionClass instances
 	 *
-	 * @param ReflectionType|null $type
 	 * @return array<ReflectionClass<object>>
 	 * @throws ReflectionException
 	 */
@@ -119,7 +126,6 @@ class PropertyHolder {
 	 * 1. `ReflectionClass` - An instance if it is a class
 	 * 2. `null` - Null if it is a primitive type
 	 *
-	 * @param ReflectionNamedType $type
 	 * @return ReflectionClass<object>|null
 	 * @throws ReflectionException
 	 */
@@ -132,7 +138,6 @@ class PropertyHolder {
 	 *
 	 * @param ReflectionClass<object> $class
 	 * @param class-string<object> $traitClass
-	 * @return bool
 	 */
 	private static function hasTrait(ReflectionClass $class, string $traitClass): bool {
 		return count(array_filter($class->getTraits(), fn(ReflectionClass $trait) => $trait->getName() === $traitClass)) === 1;
