@@ -18,7 +18,6 @@ interface BooleanParseable extends Parseable {
 
 	/**
 	 * @param U $value
-	 * @return bool
 	 */
 	public function serialize(mixed $value): bool;
 }

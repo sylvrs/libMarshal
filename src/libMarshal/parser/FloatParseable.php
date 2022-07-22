@@ -18,7 +18,6 @@ interface FloatParseable extends Parseable {
 
 	/**
 	 * @param U $value
-	 * @return float
 	 */
 	public function serialize(mixed $value): float;
 }

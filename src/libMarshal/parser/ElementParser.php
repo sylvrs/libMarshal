@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace libMarshal\parser;
 
+use function array_keys;
+use function array_map;
+use function array_values;
+
 /**
  * @template U of mixed
  *
