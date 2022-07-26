@@ -22,3 +22,6 @@ jobs:
       # PHPUnit
       - name: Run PHPUnit
         run: ./vendor/bin/phpunit --bootstrap vendor/autoload.php --configuration tests/phpunit.xml
+      # Code style checks
+      - name: Analyze code style
+        run: ./vendor/bin/php-cs-fixer fix --dry-run --diff --ansi
