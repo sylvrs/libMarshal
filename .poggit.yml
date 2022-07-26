@@ -1,9 +1,0 @@
---- # Poggit-CI Manifest.
-build-by-default: true
-branches:
-  - feature/virion
-projects:
-  libMarshal:
-    model: virion
-    type: library
-...
