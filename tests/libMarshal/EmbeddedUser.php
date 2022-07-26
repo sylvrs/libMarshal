@@ -10,12 +10,7 @@ class EmbeddedUser extends User {
 	use MarshalTrait;
 
 	/**
-	 * @param string $firstName
-	 * @param string $lastName
-	 * @param int $age
-	 * @param float $height
 	 * @param string[] $contacts
-	 * @param string $email
 	 * @param Options|null $options
 	 */
 	public function __construct(
