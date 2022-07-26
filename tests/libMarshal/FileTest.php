@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace libMarshal;
 
 use PHPUnit\Framework\TestCase;
+use function file_exists;
+use function mkdir;
 
 class FileTest extends TestCase {
 
@@ -18,7 +20,6 @@ class FileTest extends TestCase {
 			mkdir(self::OUTPUT_DIRECTORY);
 		}
 	}
-
 
 	public function testSaveUserToJson(): void {
 		$user = new User(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: [], email: "johndoe@gmail.com");
