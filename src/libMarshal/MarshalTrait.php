@@ -9,6 +9,7 @@ use libMarshal\exception\FileNotFoundException;
 use libMarshal\exception\GeneralMarshalException;
 use libMarshal\exception\UnmarshalException;
 use libMarshal\parser\Parseable;
+use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
@@ -17,7 +18,6 @@ use ReflectionType;
 use ReflectionUnionType;
 use function array_filter;
 use function array_map;
-use function assert;
 use function count;
 use function file_exists;
 use function file_get_contents;
@@ -69,22 +69,22 @@ trait MarshalTrait {
 			foreach (self::getHolders() as $holder) {
 				// Get the reflection property + field attribute from the holder
 				[$property, $field] = $holder->asArray();
-
 				// Get the current value of the property
 				$value = $this->{$property->getName()};
-				if(($parser = $holder->getParser()) instanceof Parseable) {
-					// If the holder has an associated parser, use that for marshaling
-					$value = $parser->serialize($value);
-				} else if(is_object($value) && count($holder->getTypeClasses()) > 0) {
-					// If the value is an object and has any type classes with the trait, we override
-					$value = $value->marshal();
-				}
+				$parser = $holder->getParser();
 				// Update the array with the value
 				$name = $field->name !== "" ? $field->name : $property->getName();
-				$data[$name] = $value;
+				$data[$name] = match (true) {
+					// If the value is an object and has any type classes with the trait, we override
+					is_object($value) && count($holder->getTypeClasses()) > 0 => $value->marshal(),
+					// If the holder has an associated parser, use that for marshaling
+					$parser instanceof Parseable => $parser->serialize($value),
+					// Otherwise, use the default value
+					default => $value
+				};
 			}
 			return $data;
-		} catch(ReflectionException $exception) {
+		} catch (ReflectionException $exception) {
 			throw new GeneralMarshalException($exception->getMessage(), $exception->getCode(), $exception);
 		}
 	}
@@ -102,29 +102,29 @@ trait MarshalTrait {
 			// Create a new instance of the class
 			/** @var static $instance */
 			$instance = self::getReflectedInstance()->newInstanceWithoutConstructor();
-			foreach(self::getHolders() as $holder) {
+			foreach (self::getHolders() as $holder) {
 				// Get the property and field from the holder
 				[$property, $field] = $holder->asArray();
 
 				// Get the name of the property
 				$name = $field->name !== "" ? $field->name : $property->getName();
 				// Fetch the value
-				$value = $data[$name] ?? null;
+				$value = $data[$name] ?? $property->getDefaultValue();
 				// If the value is null, doesn't allow null, & strict is true, throw an exception
-				if($value === null && !$holder->allowsNull() && $strict) {
+				if ($value === null && !$holder->allowsNull() && $strict) {
 					throw new UnmarshalException("Missing field '$name'");
 				}
-				if(($parser = $holder->getParser()) instanceof Parseable) {
+				if (($parser = $holder->getParser()) instanceof Parseable) {
 					// If the holder has an associated parser, use that for unmarshaling
 					$value = $parser->parse($value);
-				} else if(is_array($value) && count($holder->getTypeClasses()) > 0) {
+				} else if (is_array($value) && count($holder->getTypeClasses()) > 0) {
 					// If the value is an array, we can check if it has the MarshalTrait and if so, we can unmarshal it
-					foreach($holder->getTypeClasses() as $type) {
+					foreach ($holder->getTypeClasses() as $type) {
 						try {
 							$method = $type->getMethod(__FUNCTION__);
 							$value = $method->invoke($instance, $value, $strict);
 							break;
-						} catch(ReflectionException|GeneralMarshalException) {
+						} catch (ReflectionException|GeneralMarshalException) {
 							// We don't care about this exception, we just want to try the next type
 						}
 					}
@@ -136,7 +136,7 @@ trait MarshalTrait {
 				$instance->{$property->getName()} = $value;
 			}
 			return $instance;
-		} catch(ReflectionException $exception) {
+		} catch (ReflectionException $exception) {
 			throw new GeneralMarshalException($exception->getMessage(), $exception->getCode(), $exception);
 		}
 	}
@@ -163,7 +163,7 @@ trait MarshalTrait {
 	 * @throws UnmarshalException
 	 */
 	public static function loadFromYaml(string $fileName, bool $strict = true, int $pos = 0, ?int &$ndocs = null, array $callbacks = []): static {
-		if(!file_exists($fileName)) {
+		if (!file_exists($fileName)) {
 			throw new FileNotFoundException("The file '$fileName' does not exist");
 		}
 		return self::unmarshal(
@@ -200,7 +200,7 @@ trait MarshalTrait {
 	 * @throws UnmarshalException
 	 */
 	public static function loadFromJson(string $fileName, bool $strict = true, int $depth = 512, int $flags = 0): static {
-		if(!file_exists($fileName)) {
+		if (!file_exists($fileName)) {
 			throw new FileNotFoundException("The file '$fileName' does not exist");
 		}
 		return self::unmarshal(
@@ -243,13 +243,12 @@ trait MarshalTrait {
 	 * If the property doesn't have the Field attribute, it will return null
 	 */
 	private static function getField(ReflectionProperty $property): ?Field {
+		/** @var ReflectionAttribute<Field>|null $attribute */
 		$attribute = $property->getAttributes(Field::class)[0] ?? null;
-		if($attribute === null) {
-			return null;
-		}
-		$field = $attribute->newInstance();
-		assert($field instanceof Field, "Field attribute must be an instance of Field");
-		return $field;
+		return match (true) {
+			$attribute instanceof ReflectionAttribute => $attribute->newInstance(),
+			default => null
+		};
 	}
 
 	/**
@@ -259,13 +258,13 @@ trait MarshalTrait {
 	 */
 	private static function checkType(ReflectionProperty $property, mixed $value): void {
 		$type = $property->getType();
-		if($type === null || ($value === null && $type->allowsNull())) {
+		if ($type === null || ($value === null && $type->allowsNull())) {
 			return;
 		}
 		$valueTypeName = get_debug_type($value);
-		if($type instanceof ReflectionNamedType && $valueTypeName !== $type->getName() && !self::hasEdgeCase($type, $value)) {
+		if ($type instanceof ReflectionNamedType && $valueTypeName !== $type->getName() && !self::hasEdgeCase($type, $value)) {
 			throw new GeneralMarshalException("Field '{$property->getName()}' must be of type '{$type->getName()}', got '$valueTypeName'");
-		} else if($type instanceof ReflectionUnionType && !in_array($valueTypeName, ($types = self::getTypeNames($type)), true) && !self::hasEdgeCase($type, $value)) {
+		} else if ($type instanceof ReflectionUnionType && !in_array($valueTypeName, ($types = self::getTypeNames($type)), true) && !self::hasEdgeCase($type, $value)) {
 			$imploded = implode(separator: ", ", array: $types);
 			throw new GeneralMarshalException("Field '{$property->getName()}' must be one of the types ($imploded), got '$valueTypeName'");
 		}
@@ -277,7 +276,7 @@ trait MarshalTrait {
 	private static function getTypeNames(ReflectionType $type): array {
 		return array_map(
 			callback: fn(ReflectionNamedType $type) => $type->getName(),
-			array: match(true) {
+			array: match (true) {
 				$type instanceof ReflectionNamedType => [$type],
 				$type instanceof ReflectionUnionType => $type->getTypes(),
 				default => []
@@ -290,7 +289,7 @@ trait MarshalTrait {
 	 */
 	private static function hasEdgeCase(ReflectionType $type, mixed $value): bool {
 		$types = self::getTypeNames($type);
-		return match(true) {
+		return match (true) {
 			// If the value is an int, it can be implicitly cast to a float
 			get_debug_type($value) === "int" && in_array(needle: "float", haystack: $types, strict: true) => true,
 			default => false
