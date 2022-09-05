@@ -5,25 +5,24 @@ declare(strict_types=1);
 namespace libMarshal;
 
 use libMarshal\attributes\Field;
+use libMarshal\property\IntProperty;
+use libMarshal\property\StringProperty;
 
-class EmbeddedUser extends User {
-	use MarshalTrait;
+class PropertyFilledUser extends User {
 
 	/**
-	 * @param non-empty-array<string> $contacts
-	 * @param Options|null $options
+	 * @param array<string> $contacts
 	 */
 	public function __construct(
 		string $firstName,
 		string $lastName,
 		int $age,
 		float $height,
-		array $contacts,
-		string $email,
-		#[Field(name: "embedded-options", parser: OptionsParser::class)]
-		public ?Options $options = null
-	)
-	{
+		#[Field] public IntProperty|StringProperty $property,
+		array $contacts = [],
+		?string $email = null,
+	) {
 		parent::__construct($firstName, $lastName, $age, $height, $contacts, $email);
 	}
+
 }
