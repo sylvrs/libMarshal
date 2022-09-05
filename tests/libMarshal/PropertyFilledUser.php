@@ -9,7 +9,7 @@ use libMarshal\property\IntProperty;
 use libMarshal\property\StringProperty;
 
 class PropertyFilledUser extends User {
-
+	use MarshalTrait;
 	/**
 	 * @param array<string> $contacts
 	 */
