@@ -67,9 +67,9 @@ class PropertyHolder {
 	 */
 	private function createTypeClasses(): array {
 		$typeClasses = self::resolveClassesFromType($this->property->getType());
-		if($this->field->getParser() === null) {
-			foreach($typeClasses as $typeClass) {
-				if(!self::hasTraitRecursive($typeClass, MarshalTrait::class)) {
+		if ($this->field->getParser() === null) {
+			foreach ($typeClasses as $typeClass) {
+				if (!self::hasTraitRecursive($typeClass, MarshalTrait::class)) {
 					throw new RuntimeException("The type '{$typeClass->getName()}' is not a marshal type");
 				}
 			}
@@ -110,7 +110,7 @@ class PropertyHolder {
 	 */
 	private static function resolveClassesFromType(?ReflectionType $type): array {
 		return array_filter(
-			array: match(true) {
+			array: match (true) {
 				$type instanceof ReflectionNamedType => [self::resolveNamedTypeToClass($type)],
 				$type instanceof ReflectionUnionType => array_map(
 					callback: static fn (ReflectionNamedType $type) => self::resolveNamedTypeToClass($type),
@@ -152,11 +152,11 @@ class PropertyHolder {
 	 * @return bool - Returns true if the class or any of its parents has the trait
 	 */
 	private static function hasTraitRecursive(ReflectionClass $class, string $traitClass, int $maxIterations = 10): bool {
-		if($maxIterations <= 0) {
+		if ($maxIterations <= 0) {
 			throw new RuntimeException("Maximum number of iterations exceeded");
 		}
 
-		return match(true) {
+		return match (true) {
 			self::hasTrait($class, $traitClass) => true,
 			$class->getParentClass() instanceof ReflectionClass => self::hasTraitRecursive($class->getParentClass(), $traitClass, $maxIterations - 1),
 			default => false

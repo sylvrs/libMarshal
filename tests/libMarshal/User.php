@@ -10,12 +10,7 @@ class User {
 	use MarshalTrait;
 
 	/**
-	 * @param string $firstName
-	 * @param string $lastName
-	 * @param int $age
-	 * @param float $height
-	 * @param string[] $contacts
-	 * @param string|null $email
+	 * @param array<string> $contacts
 	 */
 	public function __construct(
 		#[Field(name: "first-name")] public string $firstName,

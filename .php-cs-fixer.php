@@ -53,6 +53,7 @@ $rules = [
 	"phpdoc_trim_consecutive_blank_line_separation" => true,
 	"single_blank_line_at_eof" => false,
 	"single_import_per_statement" => false,
+	"single_space_after_construct" => true,
 	"strict_param" => true,
 	"unary_operator_spaces" => true,
 ];
