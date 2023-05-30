@@ -9,18 +9,15 @@ use function array_map;
 use function array_values;
 
 /**
- * @template U of mixed
- *
- * @template K of array-key
- * @template V of mixed
- *
- * @implements ArrayParseable<array<U>, K, V>
+ * @template TKey of array-key
+ * @template TSerialized of mixed
+ * @template TParsed of mixed
  */
-abstract class ElementParser implements ArrayParseable {
+abstract class ElementParser {
 
 	/**
-	 * @param array<K,V> $value
-	 * @return array<array-key, U>
+	 * @param array<TKey,TSerialized> $value
+	 * @return array<array-key, TParsed>
 	 */
 	public function parse(mixed $value): array {
 		return array_map(
@@ -30,11 +27,18 @@ abstract class ElementParser implements ArrayParseable {
 		);
 	}
 
+	/**
+	 * Parses the element from the serialized value into a value of type TParsed
+	 *
+	 * @param TKey $key
+	 * @param TSerialized $value
+	 * @return TParsed
+	 */
 	public abstract function parseElement(mixed $key, mixed $value): mixed;
 
 	/**
-	 * @param array<array-key, U> $value
-	 * @return array<K,V>
+	 * @param array<array-key, TParsed> $value
+	 * @return array<TKey,TSerialized>
 	 */
 	public function serialize(mixed $value): array {
 		return array_map(
@@ -44,5 +48,12 @@ abstract class ElementParser implements ArrayParseable {
 		);
 	}
 
+	/**
+	 * Serializes the element from the parsed value into a value of type TSerialized
+	 *
+	 * @param TKey $key
+	 * @param TParsed $value
+	 * @return TSerialized
+	 */
 	public abstract function serializeElement(mixed $key, mixed $value): mixed;
 }
