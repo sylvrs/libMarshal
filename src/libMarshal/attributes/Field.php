@@ -6,29 +6,27 @@ namespace libMarshal\attributes;
 
 use Attribute;
 use libMarshal\parser\Parseable;
+use function is_string;
 
-#[Attribute(Attribute::TARGET_PROPERTY)]
+/**
+ * @template-covariant TSerialized of mixed
+ * @template-covariant TParsed of mixed
+ */
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_PARAMETER)]
 class Field {
-
-	/** @var Parseable<mixed, mixed>|null */
-	protected ?Parseable $parser = null;
+	/** @var Parseable<TSerialized, TParsed>|null  */
+	public readonly ?Parseable $parser;
 
 	/**
-	 * @param class-string<Parseable<mixed, mixed>>|null $parser - This is the class that will be used to parse & serialize the value.
+	 * @param string $name - This is the name of the field when marshaling/unmarshaling.
+	 * @param class-string<Parseable<TSerialized, TParsed>>|null $parser - This is the class that will be used to parse & serialize the value.
+	 * @param bool $allowUninitialized - If set to true, the field will not be required to be initialized when unmarshaling.
 	 */
 	public function __construct(
-		public string $name = "",
-		?string $parser = null
-	)
-	{
-		$this->parser = $parser ? new $parser : null;
-	}
-
-	/**
-	 * @return Parseable<mixed, mixed>|null
-	 */
-	public function getParser(): ?Parseable
-	{
-		return $this->parser;
+		public readonly string $name = "",
+		?string $parser = null,
+		public readonly bool $allowUninitialized = false,
+	) {
+		$this->parser = is_string($parser) ? new $parser() : null;
 	}
 }
