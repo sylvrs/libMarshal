@@ -21,7 +21,7 @@ class EmbeddedUser extends User {
 		array $contacts,
 		string $email,
 		#[Field(name: "embedded-options", parser: OptionsParser::class)]
-		public ?Options $options = null
+		public ?Options $options = null,
 	)
 	{
 		parent::__construct($firstName, $lastName, $age, $height, $contacts, $email);
