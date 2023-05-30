@@ -56,7 +56,7 @@ trait MarshalTrait {
 	private static ReflectionClass $reflectedInstance;
 	/**
 	 * A list of {@link PropertyHolder} instances used to fetch properties, field attributes, etc.
-	 * @var array<int, PropertyHolder>
+	 * @var array<int, PropertyHolder<mixed, mixed>>
 	 */
 	private static array $cachedHolders;
 
@@ -223,7 +223,7 @@ trait MarshalTrait {
 	/**
 	 * A lazy getter/initializer for getting the {@link PropertyHolder} instances for the implementing class.
 	 *
-	 * @return array<int, PropertyHolder>
+	 * @return array<int, PropertyHolder<mixed, mixed>>
 	 */
 	private static function getHolders(): array {
 		return self::$cachedHolders ??= array_map(
@@ -241,6 +241,8 @@ trait MarshalTrait {
 	/**
 	 * Attempts to get the Field attribute from a property
 	 * If the property doesn't have the Field attribute, it will return null
+	 *
+	 * @return Field<mixed, mixed>|null
 	 */
 	private static function getField(ReflectionProperty $property): ?Field {
 		/** @var ReflectionAttribute<Field>|null $attribute */
