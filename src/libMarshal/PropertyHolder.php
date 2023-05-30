@@ -21,6 +21,9 @@ use function count;
  * The PropertyHolder class is a wrapper class that holds a couple of key pieces of information about a property:
  * 1. The {@link ReflectionProperty} instance - Used to get the property's name and type as well as an instance's value.
  * 2. The annotated {@link Field} instance - Used to get an alternate name for the property when marshalling/unmarshalling
+ *
+ * @template TSerialized of mixed
+ * @template TParsed of mixed
  */
 class PropertyHolder {
 	/**
@@ -30,22 +33,23 @@ class PropertyHolder {
 	 */
 	protected array $typeClasses;
 
+	/**
+	 * @param Field<TSerialized, TParsed> $field
+	 */
 	public function __construct(
 		protected ReflectionProperty $property,
 		protected Field $field
-	)
-	{
+	) {
 	}
 
 	/**
 	 * This method is a getter for the field's parser and is
 	 * primarily used as a way to reduce excessive chaining of methods
-	 *
-	 * @return Parseable<mixed, mixed>|null
+	 * @return Parseable<TSerialized, TParsed>|null
 	 */
 	public function getParser(): ?Parseable
 	{
-		return $this->field->getParser();
+		return $this->field->parser;
 	}
 
 	/**
@@ -63,11 +67,11 @@ class PropertyHolder {
 	 * This method is the actual logic behind the {@link getTypeClasses()} method.
 	 *
 	 * @return array<ReflectionClass<object>>
-	 * @throws ReflectionException
+	 * @throws RuntimeException
 	 */
 	private function createTypeClasses(): array {
 		$typeClasses = self::resolveClassesFromType($this->property->getType());
-		if ($this->field->getParser() === null) {
+		if ($this->field->parser === null) {
 			foreach ($typeClasses as $typeClass) {
 				if (!self::hasTraitRecursive($typeClass, MarshalTrait::class)) {
 					throw new RuntimeException("The type '{$typeClass->getName()}' is not a marshal type");
@@ -86,17 +90,9 @@ class PropertyHolder {
 	}
 
 	/**
-	 * This method is used to determine whether
-	 * a property has a default value attached to it
-	 */
-	public function hasDefaultValue(): bool {
-		return $this->property->hasDefaultValue();
-	}
-
-	/**
 	 * Returns an array of properties that is intended to be destructured.
 	 *
-	 * @return array{0: ReflectionProperty, 1: Field}
+	 * @return array{0: ReflectionProperty, 1: Field<TSerialized, TParsed>}
 	 */
 	public function asArray(): array {
 		return [$this->property, $this->field];
@@ -106,7 +102,6 @@ class PropertyHolder {
 	 * A static method used to resolve a type to an array of ReflectionClass instances
 	 *
 	 * @return array<ReflectionClass<object>>
-	 * @throws ReflectionException
 	 */
 	private static function resolveClassesFromType(?ReflectionType $type): array {
 		return array_filter(
@@ -127,9 +122,9 @@ class PropertyHolder {
 	 * 2. `null` - Null if it is a primitive type
 	 *
 	 * @return ReflectionClass<object>|null
-	 * @throws ReflectionException
 	 */
 	private static function resolveNamedTypeToClass(ReflectionNamedType $type): ?ReflectionClass {
+		/** @phpstan-ignore-next-line - PHPStan isn't aware that `$type->getName()` returns a class string if not built-in */
 		return !$type->isBuiltin() ? new ReflectionClass($type->getName()) : null;
 	}
 
@@ -150,6 +145,7 @@ class PropertyHolder {
 	 * @param class-string<object> $traitClass - The class name of the trait to check for
 	 * @param int $maxIterations - The maximum number of inheritance levels to check (e.g., child -> parent -> grandparent, etc.)
 	 * @return bool - Returns true if the class or any of its parents has the trait
+	 * @throws RuntimeException - Thrown if the maximum number of iterations is exceeded
 	 */
 	private static function hasTraitRecursive(ReflectionClass $class, string $traitClass, int $maxIterations = 10): bool {
 		if ($maxIterations <= 0) {
