@@ -6,7 +6,6 @@ namespace libMarshal;
 
 use libMarshal\property\IntProperty;
 use PHPUnit\Framework\TestCase;
-use function var_dump;
 
 final class MarshalTest extends TestCase {
 
@@ -106,7 +105,6 @@ final class MarshalTest extends TestCase {
 			contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"],
 			email: "johndoe@gmail.com"
 		);
-		var_dump($user->marshal());
 		$this->assertEquals(
 			[
 				"first-name" => "John",
