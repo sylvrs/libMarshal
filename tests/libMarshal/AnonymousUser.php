@@ -15,7 +15,7 @@ final class AnonymousUser extends User {
 		string                 $lastName,
 		int                    $age,
 		float                  $height,
-		public readonly string $anonymousField,
+		public string          $anonymousField,
 		array                  $contacts = [],
 		?string                $email = null,
 	)
