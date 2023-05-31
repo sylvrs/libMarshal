@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace libMarshal;
 
-use AssertionError;
+use libMarshal\attributes\Exclude;
 use libMarshal\attributes\Field;
 use libMarshal\exception\FileNotFoundException;
 use libMarshal\exception\UnmarshalException;
@@ -38,16 +38,30 @@ use function yaml_parse_file;
  *
  * A good use case for this would be with data classes. For example:
  *
+ * ```php
  * class MyDataClass {
  * 	  use MarshalTrait;
  *
- *     #[Field]
  *     public int $testValue;
- *     #[Field]
  *     public bool $testBool;
- *     #[Field]
  *     public string $testString;
  * }
+ * ```
+ *
+ * By default, all fields are marshaled. If you want to exclude a field,
+ * you can use the {@link Exclude} attribute like so:
+ *
+ * ```php
+ * final class MyDataClass {
+ * 	  use MarshalTrait;
+ *
+ *   public int $testValue;
+ *   public bool $testBool;
+ *   public string $testString;
+ *   #[Exclude]
+ *   public string $excludedField;
+ * }
+ * ```
  */
 trait MarshalTrait {
 	/**
@@ -226,28 +240,37 @@ trait MarshalTrait {
 		return self::$cachedHolders ??= array_map(
 			callback: static fn(ReflectionProperty $property) => new PropertyHolder(
 				property: $property,
-				field: self::getField($property) ?? throw new AssertionError("Field attribute not found on property '{$property->getName()}'")
+				field: self::getField($property)
 			),
 			array: array_filter(
 				array: self::getReflectedInstance()->getProperties(),
-				callback: fn(ReflectionProperty $property): bool => self::getField($property) !== null
+				// exclude all properties with the Exclude attribute
+				callback: fn(ReflectionProperty $property): bool => !self::hasAttribute($property, Exclude::class) && !$property->isStatic()
 			)
 		);
 	}
 
 	/**
-	 * Attempts to get the Field attribute from a property
-	 * If the property doesn't have the Field attribute, it will return null
+	 * Attempts to get the Field attribute from a property. If it doesn't exist, a new instance is created.
 	 *
-	 * @return Field<mixed, mixed>|null
+	 * @return Field<mixed, mixed>
 	 */
-	private static function getField(ReflectionProperty $property): ?Field {
+	private static function getField(ReflectionProperty $property): Field {
 		/** @var ReflectionAttribute<Field<mixed, mixed>>|null $attribute */
 		$attribute = $property->getAttributes(Field::class)[0] ?? null;
 		return match (true) {
 			$attribute instanceof ReflectionAttribute => $attribute->newInstance(),
-			default => null
+			default => new Field(),
 		};
+	}
+
+	/**
+	 * Returns true if the property has the specified attribute
+	 *
+	 * @param class-string<object> $attributeName
+	 */
+	private static function hasAttribute(ReflectionProperty $property, string $attributeName): bool {
+		return count($property->getAttributes($attributeName)) > 0;
 	}
 
 	/**
