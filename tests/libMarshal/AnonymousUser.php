@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace libMarshal;
 
+use libMarshal\attributes\Exclude;
+
 final class AnonymousUser extends User {
 	use MarshalTrait;
 
@@ -15,7 +17,7 @@ final class AnonymousUser extends User {
 		string                 $lastName,
 		int                    $age,
 		float                  $height,
-		public string          $anonymousField,
+		#[Exclude] public string $anonymousField,
 		array                  $contacts = [],
 		?string                $email = null,
 	)

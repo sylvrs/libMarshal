@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace libMarshal;
 
-use libMarshal\attributes\Field;
 use libMarshal\property\IntProperty;
 use libMarshal\property\StringProperty;
 
@@ -18,7 +17,7 @@ class PropertyFilledUser extends User {
 		string $lastName,
 		int $age,
 		float $height,
-		#[Field] public IntProperty|StringProperty $property,
+		public IntProperty|StringProperty $property,
 		array $contacts = [],
 		?string $email = null,
 	) {

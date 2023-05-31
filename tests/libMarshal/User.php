@@ -15,10 +15,10 @@ class User {
 	public function __construct(
 		#[Field(name: "first-name")] public string $firstName,
 		#[Field(name: "last-name")] public string $lastName,
-		#[Field] public int $age,
-		#[Field] public float $height,
-		#[Field] public array $contacts = [],
-		#[Field] public ?string $email = null,
+		public int $age,
+		public float $height,
+		public array $contacts = [],
+		public ?string $email = null,
 	)
 	{
 	}

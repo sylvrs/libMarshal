@@ -61,15 +61,13 @@ final class UnmarshalTest extends TestCase {
 	}
 
 	public function testUnmarshalUserWithUninitializedFields(): void {
-		$user = UserWithUninitializedField::unmarshal(
-			data: [
-				"first-name" => "John",
-				"last-name" => "Doe",
-				"age" => 42,
-				"height" => 1.78,
-				"contacts" => [],
-			]
-		);
+		$user = UserWithUninitializedField::unmarshal([
+			"first-name" => "John",
+			"last-name" => "Doe",
+			"age" => 42,
+			"height" => 1.78,
+			"contacts" => [],
+		]);
 		$this->assertFalse(isset($user->uninitializedField));
 	}
 
