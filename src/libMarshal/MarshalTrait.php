@@ -256,12 +256,16 @@ trait MarshalTrait {
 	 * @return Field<mixed, mixed>
 	 */
 	private static function getField(ReflectionProperty $property): Field {
-		/** @var ReflectionAttribute<Field<mixed, mixed>>|null $attribute */
-		$attribute = $property->getAttributes(Field::class)[0] ?? null;
-		return match (true) {
-			$attribute instanceof ReflectionAttribute => $attribute->newInstance(),
-			default => new Field(),
-		};
+		/** @var array<ReflectionAttribute<Field<mixed, mixed>>> $attributes */
+		$attributes = array_filter(
+			$property->getAttributes(),
+			fn (ReflectionAttribute $attribute): bool => is_a($attribute->getName(), Field::class, true)
+		);
+
+		if (count($attributes) > 1) {
+			throw new UnmarshalException("Property '{$property->getName()}' has more than one Field attribute");
+		}
+		return count($attributes) === 1 ? $attributes[0]->newInstance() : new Field();
 	}
 
 	/**
