@@ -12,6 +12,7 @@ final class UserWithUninitializedField extends User {
 	public function __construct(
 		string $firstName,
 		string $lastName,
+		UserRole $role,
 		int $age,
 		float $height,
 		array $contacts,
@@ -20,7 +21,7 @@ final class UserWithUninitializedField extends User {
 		public int $uninitializedField,
 	)
 	{
-		parent::__construct($firstName, $lastName, $age, $height, $contacts, $email);
+		parent::__construct($firstName, $lastName, $role, $age, $height, $contacts, $email);
 	}
 
 }

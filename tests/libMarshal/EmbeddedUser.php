@@ -16,6 +16,7 @@ class EmbeddedUser extends User {
 	public function __construct(
 		string $firstName,
 		string $lastName,
+		UserRole $role,
 		int $age,
 		float $height,
 		array $contacts,
@@ -24,6 +25,6 @@ class EmbeddedUser extends User {
 		public ?Options $options = null,
 	)
 	{
-		parent::__construct($firstName, $lastName, $age, $height, $contacts, $email);
+		parent::__construct($firstName, $lastName, $role, $age, $height, $contacts, $email);
 	}
 }

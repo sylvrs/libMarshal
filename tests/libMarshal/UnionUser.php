@@ -12,6 +12,7 @@ class UnionUser extends User {
 	public function __construct(
 		string $firstName,
 		string $lastName,
+		UserRole $role,
 		int $age,
 		float $height,
 		array $contacts = [],
@@ -19,7 +20,7 @@ class UnionUser extends User {
 		#[Field(name: "test-field")]
 		protected int|string $testField = 0
 	) {
-		parent::__construct($firstName, $lastName, $age, $height, $contacts, $email);
+		parent::__construct($firstName, $lastName, $role, $age, $height, $contacts, $email);
 	}
 
 }

@@ -21,10 +21,10 @@ class User {
             public string $firstName,
             #[Field(name: "last-name")]
             public string $lastName,
-            #[Field]
             public int $age,
-            #[Field]
-            public string $email
+            public string $email,
+            #[Exclude]
+            public string $internalData = "..."
 	) {}
 }
 

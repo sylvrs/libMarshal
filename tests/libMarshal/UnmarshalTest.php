@@ -5,34 +5,91 @@ declare(strict_types=1);
 namespace libMarshal;
 
 use libMarshal\exception\UnmarshalException;
+use libMarshal\property\IntProperty;
 use PHPUnit\Framework\TestCase;
 
 final class UnmarshalTest extends TestCase {
 
 	public function testUnmarshalUser(): void {
-		$user = new User(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"], email: "test@gmail.com");
-		$this->assertEquals(User::unmarshal($user->marshal(), false), $user);
+		$user = new User(
+			firstName: "John",
+			lastName: "Doe",
+			role: UserRole::ADMIN,
+			age: 42,
+			height: 1.78,
+			contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"],
+			email: "test@gmail.com"
+		);
+		$this->assertEquals(User::unmarshal($user->marshal()), $user);
 	}
 
 	public function testUnmarshalEmbeddedUser(): void {
 		$options = new Options(name: "Test", type: "Embedded Options", testField: 456);
-		$user = new EmbeddedUser(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"], email: "johndoe@gmail.com", options: $options);
+		$user = new EmbeddedUser(
+			firstName: "John",
+			lastName: "Doe",
+			role: UserRole::USER,
+			age: 42,
+			height: 1.78,
+			contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"],
+			email: "johndoe@gmail.com",
+			options: $options
+		);
 		$this->assertEquals(EmbeddedUser::unmarshal($user->marshal()), $user);
 	}
 
 	public function testUnmarshalEmbeddedUserWithNullOptions(): void {
-		$user = new EmbeddedUser(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"], email: "johndoe@gmail.com");
+		$user = new EmbeddedUser(
+			firstName: "John",
+			lastName: "Doe",
+			role: UserRole::USER,
+			age: 42,
+			height: 1.78,
+			contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"],
+			email: "johndoe@gmail.com"
+		);
 		$this->assertEquals(EmbeddedUser::unmarshal($user->marshal()), $user);
 	}
 
 	public function testUnmarshalUnionUserWithInt(): void {
-		$user = new UnionUser(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"], email: "johndoe@gmail.com", testField: 456);
+		$user = new UnionUser(
+			firstName: "John",
+			lastName: "Doe",
+			role: UserRole::USER,
+			age: 42,
+			height: 1.78,
+			contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"],
+			email: "johndoe@gmail.com",
+			testField: 456
+		);
 		$this->assertEquals(UnionUser::unmarshal($user->marshal()), $user);
 	}
 
 	public function testUnmarshalUnionUserWithString(): void {
-		$user = new UnionUser(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"], email: "johndoe@gmail.com", testField: "test");
+		$user = new UnionUser(
+			firstName: "John",
+			lastName: "Doe",
+			role: UserRole::USER,
+			age: 42,
+			height: 1.78,
+			contacts: ["janedoe@gmail.com", "jimdoe@gmail.com"],
+			email: "johndoe@gmail.com",
+			testField: "test"
+		);
 		$this->assertEquals(UnionUser::unmarshal($user->marshal()), $user);
+	}
+
+	public function testUnmarshalPropertyFilledUser(): void {
+		$user = new PropertyFilledUser(
+			firstName: "John",
+			lastName: "Doe",
+			role: UserRole::USER,
+			age: 42,
+			height: 1.78,
+			property: new IntProperty(123),
+			contacts: []
+		);
+		$this->assertEquals(PropertyFilledUser::unmarshal($user->marshal()), $user);
 	}
 
 	public function testUnmarshalWithMissingField(): void {
@@ -64,6 +121,7 @@ final class UnmarshalTest extends TestCase {
 		$user = UserWithUninitializedField::unmarshal([
 			"first-name" => "John",
 			"last-name" => "Doe",
+			"role" => "ADMIN",
 			"age" => 42,
 			"height" => 1.78,
 			"contacts" => [],

@@ -15,6 +15,7 @@ class User {
 	public function __construct(
 		#[Field(name: "first-name")] public string $firstName,
 		#[Field(name: "last-name")] public string $lastName,
+		public UserRole $role,
 		public int $age,
 		public float $height,
 		public array $contacts = [],
