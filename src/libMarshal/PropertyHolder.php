@@ -7,6 +7,7 @@ namespace libMarshal;
 use libMarshal\attributes\Field;
 use libMarshal\parser\Parseable;
 use ReflectionClass;
+use ReflectionEnum;
 use ReflectionException;
 use ReflectionNamedType;
 use ReflectionProperty;
@@ -34,11 +35,18 @@ class PropertyHolder {
 	protected array $typeClasses;
 
 	/**
+	 * If the property's type is an array, this is used to store a list of the types of the array's elements
+	 * This can be specified using a doc-comment above the property
+	 * @var array<mixed|ReflectionClass<object>>
+	 */
+	protected array $arrayTypes;
+
+	/**
 	 * @param Field<TSerialized, TParsed> $field
 	 */
 	public function __construct(
 		protected ReflectionProperty $property,
-		protected Field $field
+		protected Field $field,
 	) {
 	}
 
@@ -73,7 +81,7 @@ class PropertyHolder {
 		$typeClasses = self::resolveClassesFromType($this->property->getType());
 		if ($this->field->parser === null) {
 			foreach ($typeClasses as $typeClass) {
-				if (!self::hasTraitRecursive($typeClass, MarshalTrait::class)) {
+				if (!self::hasTraitRecursive($typeClass, MarshalTrait::class) && !$typeClass->isEnum()) {
 					throw new RuntimeException("The type '{$typeClass->getName()}' is not a marshal type");
 				}
 			}
@@ -96,6 +104,17 @@ class PropertyHolder {
 	 */
 	public function asArray(): array {
 		return [$this->property, $this->field];
+	}
+
+	public function getProperty(): ReflectionProperty {
+		return $this->property;
+	}
+
+	/**
+	 * @return Field<TSerialized, TParsed>
+	 */
+	public function getField(): Field {
+		return $this->field;
 	}
 
 	/**
@@ -124,8 +143,13 @@ class PropertyHolder {
 	 * @return ReflectionClass<object>|null
 	 */
 	private static function resolveNamedTypeToClass(ReflectionNamedType $type): ?ReflectionClass {
-		/** @phpstan-ignore-next-line - PHPStan isn't aware that `$type->getName()` returns a class string if not built-in */
-		return !$type->isBuiltin() ? new ReflectionClass($type->getName()) : null;
+		if ($type->isBuiltin()) {
+			return null;
+		}
+		/** @var class-string<object> $typeName */
+		$typeName = $type->getName();
+		$reflected = new ReflectionClass($typeName);
+		return $reflected->isEnum() ? new ReflectionEnum($typeName) : $reflected;
 	}
 
 	/**
