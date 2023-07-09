@@ -21,7 +21,7 @@ abstract class ElementParser {
 	 */
 	public function parse(mixed $value): array {
 		return array_map(
-			fn(mixed $key, mixed $currentValue): mixed => $this->parseElement($key, $currentValue),
+			fn (mixed $key, mixed $currentValue): mixed => $this->parseElement($key, $currentValue),
 			array_keys($value),
 			array_values($value)
 		);
@@ -42,7 +42,7 @@ abstract class ElementParser {
 	 */
 	public function serialize(mixed $value): array {
 		return array_map(
-			fn(mixed $key, mixed $currentValue): mixed => $this->serializeElement($key, $currentValue),
+			fn (mixed $key, mixed $currentValue): mixed => $this->serializeElement($key, $currentValue),
 			array_keys($value),
 			array_values($value)
 		);
