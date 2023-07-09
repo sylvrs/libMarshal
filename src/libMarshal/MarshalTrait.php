@@ -192,16 +192,29 @@ trait MarshalTrait {
 	 * This method is used to marshal the object and save it into a JSON file
 	 *
 	 * @param int<1, max> $depth
+	 * @throws JsonException
 	 */
-	public function saveToJson(string $fileName, int $flags = 0, int $depth = 512): int|false {
-		return file_put_contents(
-			filename: $fileName,
-			data: json_encode(value: $this->marshal(), flags: $flags, depth: $depth)
-		);
+	public function encodeToJson(int $flags = 0, int $depth = 512): string {
+		return json_encode(value: $this->marshal(), flags: $flags | JSON_THROW_ON_ERROR, depth: $depth);
 	}
 
 	/**
-	 * This method is used to load JSON data from a file and unmarshal it into an instance of the trait user
+	 * Marshals the object and saves it into a JSON file
+	 *
+	 * @param int<1, max> $depth
+	 * @return int - The number of bytes written to the file or false on failure
+	 * @throws JsonException
+	 */
+	public function saveToJson(string $fileName, int $flags = 0, int $depth = 512): int {
+		$data = file_put_contents(filename: $fileName, data: $this->encodeToJson(flags: $flags, depth: $depth));
+		if (!is_int($data)) {
+			throw new FileSaveException("Failed to write data to file '$fileName'");
+		}
+		return $data;
+	}
+
+	/**
+	 * Loads JSON data from a file and unmarshal it into an instance of the trait user
 	 *
 	 * @param int<1, max> $depth
 	 * @throws UnmarshalException
@@ -215,12 +228,18 @@ trait MarshalTrait {
 		if ($raw === false) {
 			throw new UnmarshalException("Failed to read file '$fileName'");
 		}
+		return self::decodeFromJson(raw: $raw, strict: $strict, depth: $depth, flags: $flags);
+	}
 
+	/**
+	 * Decodes the object from a JSON string and returns it as an instance of the trait user
+	 * @param int<1, max> $depth
+	 */
+	public static function decodeFromJson(string $raw, bool $strict, int $depth = 512, int $flags = 0): static {
 		$data = json_decode(json: $raw, associative: true, depth: $depth, flags: $flags);
 		if (!is_array($data)) {
-			throw new UnmarshalException("The file '$fileName' does not contain a valid JSON object");
+			throw new UnmarshalException("Data loaded from JSON is not a valid object");
 		}
-
 		return self::unmarshal(data: $data, strict: $strict);
 	}
 
