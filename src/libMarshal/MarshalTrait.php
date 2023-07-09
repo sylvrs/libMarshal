@@ -172,7 +172,7 @@ trait MarshalTrait {
 	 * This method is used to load YAML data from a file and unmarshal it into an instance of the trait user
 	 *
 	 * @param array<class-string, callable> $callbacks
-	 * @throws UnmarshalException
+	 * @throws UnmarshalException|FileNotFoundException
 	 */
 	public static function loadFromYaml(string $fileName, bool $strict = true, int $pos = 0, ?int &$ndocs = null, array $callbacks = []): static {
 		if (!file_exists($fileName)) {
@@ -189,7 +189,7 @@ trait MarshalTrait {
 	}
 
 	/**
-	 * This method is used to marshal the object and save it into a JSON file
+	 * Encodes the object into a JSON string or throws an error on failure
 	 *
 	 * @param int<1, max> $depth
 	 * @throws JsonException
