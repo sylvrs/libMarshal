@@ -51,4 +51,4 @@ At the moment, there are a few improvements that can be/or are being worked on. 
 - [X] Cache properties for performance benefits
 
 ## Issues
-Any issues/suggestion can be reported [here](https://github.com/sylvrs/libMarshal/issues).
+Any issues/suggestions can be reported [here](https://github.com/sylvrs/libMarshal/issues).
