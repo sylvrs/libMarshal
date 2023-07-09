@@ -15,13 +15,14 @@ class PropertyFilledUser extends User {
 	public function __construct(
 		string $firstName,
 		string $lastName,
+		UserRole $role,
 		int $age,
 		float $height,
 		public IntProperty|StringProperty $property,
 		array $contacts = [],
 		?string $email = null,
 	) {
-		parent::__construct($firstName, $lastName, $age, $height, $contacts, $email);
+		parent::__construct($firstName, $lastName, $role, $age, $height, $contacts, $email);
 	}
 
 }

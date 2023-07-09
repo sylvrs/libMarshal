@@ -22,7 +22,14 @@ class FileTest extends TestCase {
 	}
 
 	public function testSaveUserToJson(): void {
-		$user = new User(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: [], email: "johndoe@gmail.com");
+		$user = new User(
+			firstName: "John",
+			lastName: "Doe",
+			role: UserRole::USER,
+			age: 42, height: 1.78,
+			contacts: [],
+			email: "johndoe@gmail.com"
+		);
 		$user->saveToJson(self::JSON_PATH);
 		$this->expectNotToPerformAssertions();
 	}
@@ -32,16 +39,30 @@ class FileTest extends TestCase {
 	 */
 	public function testLoadUserFromJson(): void {
 		$user = User::loadFromJson(self::JSON_PATH);
-		$this->assertEquals("John", $user->firstName);
-		$this->assertEquals("Doe", $user->lastName);
-		$this->assertEquals(42, $user->age);
-		$this->assertEquals(1.78, $user->height);
-		$this->assertEquals([], $user->contacts);
-		$this->assertEquals("johndoe@gmail.com", $user->email);
+		$this->assertEquals(
+			[
+				"first-name" => "John",
+				"last-name" => "Doe",
+				"role" => "USER",
+				"age" => 42,
+				"height" => 1.78,
+				"contacts" => [],
+				"email" => "johndoe@gmail.com",
+			],
+			$user->marshal()
+		);
 	}
 
 	public function testSaveUserToYaml(): void {
-		$user = new User(firstName: "John", lastName: "Doe", age: 42, height: 1.78, contacts: [], email: "johndoe@gmail.com");
+		$user = new User(
+			firstName: "John",
+			lastName: "Doe",
+			role: UserRole::USER,
+			age: 42,
+			height: 1.78,
+			contacts: [],
+			email: "johndoe@gmail.com"
+		);
 		$user->saveToYaml(self::YAML_PATH);
 		$this->expectNotToPerformAssertions();
 	}
@@ -51,16 +72,30 @@ class FileTest extends TestCase {
 	 */
 	public function testLoadUserFromYaml(): void {
 		$user = User::loadFromYaml(self::YAML_PATH);
-		$this->assertEquals("John", $user->firstName);
-		$this->assertEquals("Doe", $user->lastName);
-		$this->assertEquals(42, $user->age);
-		$this->assertEquals(1.78, $user->height);
-		$this->assertEquals([], $user->contacts);
-		$this->assertEquals("johndoe@gmail.com", $user->email);
+		$this->assertEquals(
+			[
+				"first-name" => "John",
+				"last-name" => "Doe",
+				"role" => "USER",
+				"age" => 42,
+				"height" => 1.78,
+				"contacts" => [],
+				"email" => "johndoe@gmail.com",
+			],
+			$user->marshal()
+		);
 	}
 
 	public function testIntEdgeCase(): void {
-		$user = new User(firstName: "John", lastName: "Doe", age: 42, height: 2, contacts: [], email: "johndoe@gmail.com");
+		$user = new User(
+			firstName: "John",
+			lastName: "Doe",
+			role: UserRole::USER,
+			age: 42,
+			height: 2,
+			contacts: [],
+			email: "johndoe@gmail.com"
+		);
 		$user->saveToJson(self::JSON_PATH);
 		$user = User::loadFromJson(self::JSON_PATH);
 		$this->assertEquals(2, $user->height);

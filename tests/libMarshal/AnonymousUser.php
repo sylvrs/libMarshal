@@ -13,18 +13,20 @@ final class AnonymousUser extends User {
 	 * @param array<string> $contacts
 	 */
 	public function __construct(
-		string                 $firstName,
-		string                 $lastName,
-		int                    $age,
-		float                  $height,
+		string $firstName,
+		string $lastName,
+		UserRole $role,
+		int $age,
+		float $height,
 		#[Exclude] public string $anonymousField,
-		array                  $contacts = [],
-		?string                $email = null,
+		array $contacts = [],
+		?string $email = null,
 	)
 	{
 		parent::__construct(
 			firstName: $firstName,
 			lastName: $lastName,
+			role: $role,
 			age: $age,
 			height: $height,
 			contacts: $contacts,
