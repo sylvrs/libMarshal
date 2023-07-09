@@ -4,20 +4,26 @@ declare(strict_types=1);
 
 namespace libMarshal;
 
+use BackedEnum;
+use JsonException;
 use libMarshal\attributes\Exclude;
 use libMarshal\attributes\Field;
 use libMarshal\exception\FileNotFoundException;
+use libMarshal\exception\FileSaveException;
 use libMarshal\exception\UnmarshalException;
 use libMarshal\parser\Parseable;
 use ReflectionAttribute;
 use ReflectionClass;
+use ReflectionEnum;
 use ReflectionException;
 use ReflectionNamedType;
 use ReflectionProperty;
 use ReflectionType;
 use ReflectionUnionType;
+use UnitEnum;
 use function array_filter;
 use function array_map;
+use function assert;
 use function count;
 use function file_exists;
 use function file_get_contents;
@@ -25,13 +31,18 @@ use function file_put_contents;
 use function get_debug_type;
 use function implode;
 use function in_array;
+use function is_a;
 use function is_array;
+use function is_int;
 use function is_object;
+use function is_string;
 use function json_decode;
 use function json_encode;
 use function method_exists;
+use function strtolower;
 use function yaml_emit_file;
 use function yaml_parse_file;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * This is the main trait used for marshaling/demarshaling data.
@@ -90,9 +101,17 @@ trait MarshalTrait {
 			$name = $field->name !== "" ? $field->name : $property->getName();
 			$data[$name] = match (true) {
 				// If the value is an object and has any type classes with the trait, we override
-				is_object($value) && method_exists($value, "marshal") && count($holder->getTypeClasses()) > 0 => $value->marshal(),
+				is_object($value) && count($holder->getTypeClasses()) > 0 && method_exists($value, "marshal") => $value->marshal(),
 				// If the holder has an associated parser, use that for marshaling
 				$parser instanceof Parseable => $parser->serialize($value),
+				is_array($value) => array_map(
+					callback: fn (mixed $value) => is_object($value) && method_exists($value, "marshal") ? $value->marshal() : $value,
+					array: $value
+				),
+				// If the value is a backed enum & the name-enum resolution is false, use the enum's value
+				is_object($value) && $value instanceof BackedEnum && !$holder->getField()->resolveEnumByName => $value->value,
+				// If the value is a unit enum, use the enum's name
+				is_object($value) && $value instanceof UnitEnum => $value->name,
 				// Otherwise, use the default value
 				default => $value
 			};
@@ -128,28 +147,71 @@ trait MarshalTrait {
 			if ($value === null && !$holder->allowsNull() && $strict) {
 				throw new UnmarshalException("Missing field '$name'");
 			}
-			if (($parser = $holder->getParser()) instanceof Parseable) {
-				// If the holder has an associated parser, use that for unmarshaling
-				$value = $parser->parse($value);
-			} else if (is_array($value) && count($holder->getTypeClasses()) > 0) {
-				// If the value is an array, we can check if it has the MarshalTrait and if so, we can unmarshal it
-				foreach ($holder->getTypeClasses() as $type) {
-					try {
-						$method = $type->getMethod(__FUNCTION__);
-						$value = $method->invoke($instance, $value, $strict);
-						break;
-					} catch (ReflectionException|UnmarshalException) {
-						// We don't care about this exception, we just want to try the next type
-					}
-				}
-			} else {
-				// Ensure that the value is of the correct type
-				self::checkType($property, $value);
-			}
 			// Set the value on the instance
-			$instance->{$property->getName()} = $value;
+			$instance->{$property->getName()} = self::unmarshalProperty($holder, $instance, $value, $strict);
 		}
 		return $instance;
+	}
+
+	/**
+	 * @param PropertyHolder<mixed, mixed> $holder
+	 */
+	private static function unmarshalProperty(PropertyHolder $holder, self $instance, mixed $value, bool $strict): mixed {
+		$value = match (true) {
+			// custom parsing takes precedence
+			($parser = $holder->getParser()) instanceof Parseable => $parser->parse($value),
+			// try to transform raw array into any of the types
+			is_array($value) && ($unmarshalled = self::tryArrayIntoObject($holder, $instance, $value, $strict)) !== null => $unmarshalled,
+			// try to transform raw value into an enum
+			($unmarshalled = self::tryIntoEnum($holder, $value)) !== null => $unmarshalled,
+			// if all else values, just use the original value
+			default => $value
+		};
+		// Check if the value is of the correct type
+		self::checkType($holder->getProperty(), $value);
+		return $value;
+	}
+
+	/**
+	 * @param PropertyHolder<mixed, mixed> $holder
+	 * @param array<string, mixed> $value
+	 */
+	private static function tryArrayIntoObject(PropertyHolder $holder, self $instance, array $value, bool $strict): ?object {
+		// If the value is an array, we can check if it has the MarshalTrait and if so, we can unmarshal it
+		foreach ($holder->getTypeClasses() as $type) {
+			try {
+				$method = $type->getMethod("unmarshal");
+				/** @var object $value */
+				$value = $method->invoke($instance, $value, $strict);
+				return $value;
+			} catch (ReflectionException|UnmarshalException) {
+				// We don't care about this exception, we just want to try the next type
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param PropertyHolder<mixed, mixed> $holder
+	 */
+	private static function tryIntoEnum(PropertyHolder $holder, mixed $value): ?object {
+		foreach ($holder->getTypeClasses() as $type) {
+			if (!$type->isEnum()) {
+				continue;
+			}
+			assert($type instanceof ReflectionEnum);
+			// try to match the name if it isn't backed or the value if it is
+			foreach ($type->getCases() as $case) {
+				if (!$type->isBacked() || $holder->getField()->resolveEnumByName) {
+					if (is_string($value) && strtolower($case->getName()) === strtolower($value)) {
+						return $case->getValue();
+					}
+				} else if ($case->getBackingValue() === $value) {
+					return $case->getValue();
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -341,5 +403,4 @@ trait MarshalTrait {
 			default => false
 		};
 	}
-
 }
