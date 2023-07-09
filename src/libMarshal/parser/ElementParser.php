@@ -9,51 +9,48 @@ use function array_map;
 use function array_values;
 
 /**
- * @template TKey of array-key
  * @template TSerialized of mixed
  * @template TParsed of mixed
+ *
+ * @implements Parseable<array<TSerialized>, array<TParsed>>
  */
-abstract class ElementParser {
+abstract class ElementParser implements Parseable {
 
 	/**
-	 * @param array<TKey,TSerialized> $value
-	 * @return array<array-key, TParsed>
+	 * @param array<TSerialized> $value
+	 * @return array<TParsed>
 	 */
 	public function parse(mixed $value): array {
 		return array_map(
-			fn (mixed $key, mixed $currentValue): mixed => $this->parseElement($key, $currentValue),
-			array_keys($value),
-			array_values($value)
+			fn (mixed $element): mixed => $this->parseElement($element),
+			$value
 		);
 	}
 
 	/**
 	 * Parses the element from the serialized value into a value of type TParsed
 	 *
-	 * @param TKey $key
 	 * @param TSerialized $value
 	 * @return TParsed
 	 */
-	public abstract function parseElement(mixed $key, mixed $value): mixed;
+	public abstract function parseElement(mixed $value): mixed;
 
 	/**
-	 * @param array<array-key, TParsed> $value
-	 * @return array<TKey,TSerialized>
+	 * @param array<TParsed> $value
+	 * @return array<TSerialized>
 	 */
 	public function serialize(mixed $value): array {
 		return array_map(
-			fn (mixed $key, mixed $currentValue): mixed => $this->serializeElement($key, $currentValue),
-			array_keys($value),
-			array_values($value)
+			fn (mixed $element): mixed => $this->serializeElement($element),
+			$value
 		);
 	}
 
 	/**
 	 * Serializes the element from the parsed value into a value of type TSerialized
 	 *
-	 * @param TKey $key
 	 * @param TParsed $value
 	 * @return TSerialized
 	 */
-	public abstract function serializeElement(mixed $key, mixed $value): mixed;
+	public abstract function serializeElement(mixed $value): mixed;
 }
