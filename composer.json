@@ -32,5 +32,11 @@
     "netresearch/jsonmapper": "^4.2",
     "cuyz/valinor": "^1.4",
     "json-mapper/json-mapper": "^2.18"
+  },
+  "extra": {
+    "virion":{
+      "spec": "3.0",
+      "namespace-root": "libMarshal"
+    }
   }
 }
