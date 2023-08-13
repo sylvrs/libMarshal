@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace libMarshal\attributes;
+namespace sylvrs\libMarshal\attributes;
 
 use Attribute;
-use libMarshal\parser\Parseable;
+use sylvrs\libMarshal\parser\Parseable;
 use function is_string;
 
 /**

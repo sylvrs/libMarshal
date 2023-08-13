@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace libMarshal;
+namespace sylvrs\libMarshal;
 
 use BackedEnum;
 use JsonException;
-use libMarshal\attributes\Exclude;
-use libMarshal\attributes\Field;
-use libMarshal\exception\FileNotFoundException;
-use libMarshal\exception\FileSaveException;
-use libMarshal\exception\UnmarshalException;
-use libMarshal\parser\Parseable;
+use sylvrs\libMarshal\attributes\Exclude;
+use sylvrs\libMarshal\attributes\Field;
+use sylvrs\libMarshal\exception\FileNotFoundException;
+use sylvrs\libMarshal\exception\FileSaveException;
+use sylvrs\libMarshal\exception\UnmarshalException;
+use sylvrs\libMarshal\parser\Parseable;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionEnum;

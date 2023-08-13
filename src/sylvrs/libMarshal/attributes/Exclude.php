@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace libMarshal\attributes;
+namespace sylvrs\libMarshal\attributes;
 
 use Attribute;
 

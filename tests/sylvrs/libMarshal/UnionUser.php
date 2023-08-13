@@ -2,25 +2,23 @@
 
 declare(strict_types=1);
 
-namespace libMarshal;
+namespace sylvrs\libMarshal;
 
-use libMarshal\property\IntProperty;
-use libMarshal\property\StringProperty;
+use sylvrs\libMarshal\attributes\Field;
 
-class PropertyFilledUser extends User {
+class UnionUser extends User {
 	use MarshalTrait;
-	/**
-	 * @param array<string> $contacts
-	 */
+
 	public function __construct(
 		string $firstName,
 		string $lastName,
 		UserRole $role,
 		int $age,
 		float $height,
-		public IntProperty|StringProperty $property,
 		array $contacts = [],
 		?string $email = null,
+		#[Field(name: "test-field")]
+		protected int|string $testField = 0
 	) {
 		parent::__construct($firstName, $lastName, $role, $age, $height, $contacts, $email);
 	}

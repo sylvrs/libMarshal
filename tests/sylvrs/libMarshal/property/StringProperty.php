@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace libMarshal\property;
+namespace sylvrs\libMarshal\property;
 
-use libMarshal\MarshalTrait;
+use sylvrs\libMarshal\MarshalTrait;
 
 final class StringProperty {
 	use MarshalTrait;
