@@ -1,5 +1,5 @@
 <testsuites>
     <testsuite name="Tests">
-        <directory>libMarshal</directory>
+        <directory>sylvrs/libMarshal</directory>
     </testsuite>
 </testsuites>
