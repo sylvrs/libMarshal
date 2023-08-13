@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace sylvrs\libMarshal;
 
+use PHPUnit\Framework\TestCase;
 use sylvrs\libMarshal\exception\UnmarshalException;
 use sylvrs\libMarshal\property\IntProperty;
-use PHPUnit\Framework\TestCase;
 
 final class UnmarshalTest extends TestCase {
 

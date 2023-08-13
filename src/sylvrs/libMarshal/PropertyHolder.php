@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace sylvrs\libMarshal;
 
-use sylvrs\libMarshal\attributes\Field;
-use sylvrs\libMarshal\parser\Parseable;
 use ReflectionClass;
 use ReflectionEnum;
 use ReflectionException;
@@ -14,6 +12,8 @@ use ReflectionProperty;
 use ReflectionType;
 use ReflectionUnionType;
 use RuntimeException;
+use sylvrs\libMarshal\attributes\Field;
+use sylvrs\libMarshal\parser\Parseable;
 use function array_filter;
 use function array_map;
 use function count;
