@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace libMarshal;
+namespace sylvrs\libMarshal;
 
 use PHPUnit\Framework\TestCase;
 use function file_exists;

@@ -12,17 +12,23 @@
   ],
   "autoload": {
     "psr-4": {
-      "libMarshal\\": "src/libMarshal"
+      "sylvrs\\libMarshal\\": "src/sylvrs/libMarshal"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "libMarshal\\": "tests/libMarshal"
+      "sylvrs\\libMarshal\\": "tests/sylvrs/libMarshal"
     }
   },
   "require": {
     "php": ">=8.1",
     "ext-yaml": "*"
+  },
+  "extra": {
+    "virion":{
+      "spec": "3.0",
+      "namespace-root": "sylvrs\\libMarshal"
+    }
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^v3.17.0",

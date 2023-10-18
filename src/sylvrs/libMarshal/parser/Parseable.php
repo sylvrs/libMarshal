@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace libMarshal\parser;
+namespace sylvrs\libMarshal\parser;
 
 /**
  * The `Parseable` interface is used when defining custom parsing of a field.

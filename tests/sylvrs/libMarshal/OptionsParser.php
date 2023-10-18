@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace libMarshal;
+namespace sylvrs\libMarshal;
 
-use libMarshal\parser\Parseable;
+use sylvrs\libMarshal\parser\Parseable;
 use function is_array;
 
 /** @implements Parseable<array<string, string|int>|null, Options|null> */

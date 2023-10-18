@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace libMarshal;
+namespace sylvrs\libMarshal;
 
-use libMarshal\exception\UnmarshalException;
-use libMarshal\property\IntProperty;
 use PHPUnit\Framework\TestCase;
+use sylvrs\libMarshal\exception\UnmarshalException;
+use sylvrs\libMarshal\property\IntProperty;
 
 final class UnmarshalTest extends TestCase {
 

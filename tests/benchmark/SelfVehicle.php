@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace benchmark;
 
-use libMarshal\MarshalTrait;
+use sylvrs\libMarshal\MarshalTrait;
 
 /**
  * A separate class is needed as the other libraries try to map internal properties from MarshalTrait

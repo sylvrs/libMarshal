@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace libMarshal;
+namespace sylvrs\libMarshal;
 
-use libMarshal\property\IntProperty;
 use PHPUnit\Framework\TestCase;
+use sylvrs\libMarshal\property\IntProperty;
 
 final class MarshalTest extends TestCase {
 
